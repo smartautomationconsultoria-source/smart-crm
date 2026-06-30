@@ -767,33 +767,33 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 
 <script>
 
-// ── LOGIN ──────────────────────────────────────────────
+// -- LOGIN ----------------------------------------------
 let currentPerfil = null;
 
 const PERFIS = {
   admin: {
     nome: 'Grasiele M.',
-    role: 'CEO · ADMIN',
+    role: 'CEO . ADMIN',
     ini: 'GM',
     leads_filter: null, // vê todos
     nav_hidden: [],
-    dash_label: 'Visão executiva completa · Junho 2026',
+    dash_label: 'Visão executiva completa . Junho 2026',
   },
   vendedor: {
     nome: 'Carlos Silva',
-    role: 'Vendedor · PJ',
+    role: 'Vendedor . PJ',
     ini: 'CS',
     leads_filter: 'Carlos Silva',
     nav_hidden: ['carteira'],
-    dash_label: 'Minha carteira · Junho 2026',
+    dash_label: 'Minha carteira . Junho 2026',
   },
   vendedor2: {
     nome: 'Ana Ferreira',
-    role: 'Vendedora · CLT',
+    role: 'Vendedora . CLT',
     ini: 'AF',
     leads_filter: 'Ana Ferreira',
     nav_hidden: ['carteira'],
-    dash_label: 'Minha carteira · Junho 2026',
+    dash_label: 'Minha carteira . Junho 2026',
   },
 };
 
@@ -852,12 +852,12 @@ function mostrarBannerPerfil(nome, role, filtro){
   const b = document.createElement('div');
   b.id='perfil-banner';
   b.style.cssText='background:var(--blue4);border-bottom:1px solid var(--line);padding:6px 24px;font-size:11px;color:var(--blue3);display:flex;align-items:center;gap:8px;flex-shrink:0;';
-  b.innerHTML=`<span>👤 Você está logado como <b>${nome}</b> (${role}) — visualizando apenas sua carteira: <b>${filtro}</b></span>
+  b.innerHTML=`<span>👤 Você está logado como <b>${nome}</b> (${role}) - visualizando apenas sua carteira: <b>${filtro}</b></span>
     <button onclick="document.getElementById('login-screen').style.display='flex'" style="margin-left:auto;background:none;border:1px solid var(--line);border-radius:5px;color:var(--muted);padding:2px 8px;cursor:pointer;font-size:10px;font-family:'Inter',sans-serif">↩ Trocar</button>`;
   document.querySelector('.main').insertBefore(b, document.querySelector('.topbar').nextSibling);
 }
 
-// ── DADOS ──────────────────────────────────────────────
+// -- DADOS ----------------------------------------------
 let leads=[
   {id:1,nome:'Frigorífico Bela Vista',cnpj:'11.222.333/0001-01',prod:'Linha Premium',orig:'Feira',vend:'Carlos Silva',tipo:'PJ',wpp:'5511999990001',val:'R$28.000',vn:28000,et:'b-prop',etxt:'Proposta',ult:'22/06',obs:'Interesse em contrato anual.',email:''},
   {id:2,nome:'Distribuidora Norte S.A.',cnpj:'22.333.444/0001-02',prod:'Mix Completo',orig:'Indicação',vend:'Ana Ferreira',tipo:'CLT',wpp:'5531999990002',val:'R$45.000',vn:45000,et:'b-nego',etxt:'Negociação',ult:'23/06',obs:'Aguardando diretoria.',email:''},
@@ -927,23 +927,23 @@ const autosData=[
 ];
 
 const kanbanEtapas=[
-  {t:'Novos',c:'var(--blue3)',cards:[{n:'Agropecuária Sul Ltda.',s:'Roberto Costa · PJ',v:'R$12.000',d:'Hoje',wpp:'5541999990003'},{n:'Laticínio Central MG',s:'Carlos Silva · PJ',v:'',d:'23/jun',wpp:'5531999990009'}]},
-  {t:'Em Contato',c:'var(--blue2)',cards:[{n:'Pet Shop Rede Estrela',s:'Juliana Mendes · CLT',v:'R$8.500',d:'21/jun',wpp:'5521999990004'},{n:'Cerealista Oeste GO',s:'Roberto Costa · PJ',v:'R$18.000',d:'20/jun',wpp:'5562990010'}]},
-  {t:'Proposta',c:'#4A9AFF',cards:[{n:'Frigorífico Bela Vista',s:'Carlos Silva · PJ',v:'R$28.000',d:'22/jun',wpp:'5511999990001'},{n:'Pet Food Varejo RJ',s:'Juliana Mendes · CLT',v:'R$6.200',d:'23/jun',wpp:'5521999990008'},{n:'Cooperativa Sul PR',s:'Ana Ferreira · CLT',v:'R$34.000',d:'18/jun',wpp:'5541990011'}]},
-  {t:'Negociação',c:'#6DAAFF',cards:[{n:'Distribuidora Norte S.A.',s:'Ana Ferreira · CLT',v:'R$45.000 🔥',d:'23/jun',wpp:'5531999990002'},{n:'Distribuidora Central SP',s:'Marcos Pereira · PJ',v:'R$55.000 🔥',d:'19/jun',wpp:'5511999990006'}]},
-  {t:'Fechado ✓',c:'var(--green)',cards:[{n:'Comercial Agro Norte',s:'Carlos Silva · PJ',v:'R$32.000 ✓',d:'20/jun',wpp:'5592999990005'},{n:'Distribuidora Pampa RS',s:'Ana Ferreira · CLT',v:'R$28.500 ✓',d:'17/jun',wpp:'5551990012'}]},
-  {t:'Perdido',c:'var(--red)',cards:[{n:'Cerealista Norte',s:'Roberto Costa · PJ',v:'R$15.000',d:'18/jun',mot:'Preço',wpp:'5511990013'},{n:'Frigorífico São Paulo',s:'Marcos Pereira · PJ',v:'R$38.000',d:'16/jun',mot:'Concorrente',wpp:'5511990014'}]},
+  {t:'Novos',c:'var(--blue3)',cards:[{n:'Agropecuária Sul Ltda.',s:'Roberto Costa . PJ',v:'R$12.000',d:'Hoje',wpp:'5541999990003'},{n:'Laticínio Central MG',s:'Carlos Silva . PJ',v:'',d:'23/jun',wpp:'5531999990009'}]},
+  {t:'Em Contato',c:'var(--blue2)',cards:[{n:'Pet Shop Rede Estrela',s:'Juliana Mendes . CLT',v:'R$8.500',d:'21/jun',wpp:'5521999990004'},{n:'Cerealista Oeste GO',s:'Roberto Costa . PJ',v:'R$18.000',d:'20/jun',wpp:'5562990010'}]},
+  {t:'Proposta',c:'#4A9AFF',cards:[{n:'Frigorífico Bela Vista',s:'Carlos Silva . PJ',v:'R$28.000',d:'22/jun',wpp:'5511999990001'},{n:'Pet Food Varejo RJ',s:'Juliana Mendes . CLT',v:'R$6.200',d:'23/jun',wpp:'5521999990008'},{n:'Cooperativa Sul PR',s:'Ana Ferreira . CLT',v:'R$34.000',d:'18/jun',wpp:'5541990011'}]},
+  {t:'Negociação',c:'#6DAAFF',cards:[{n:'Distribuidora Norte S.A.',s:'Ana Ferreira . CLT',v:'R$45.000 🔥',d:'23/jun',wpp:'5531999990002'},{n:'Distribuidora Central SP',s:'Marcos Pereira . PJ',v:'R$55.000 🔥',d:'19/jun',wpp:'5511999990006'}]},
+  {t:'Fechado ✓',c:'var(--green)',cards:[{n:'Comercial Agro Norte',s:'Carlos Silva . PJ',v:'R$32.000 ✓',d:'20/jun',wpp:'5592999990005'},{n:'Distribuidora Pampa RS',s:'Ana Ferreira . CLT',v:'R$28.500 ✓',d:'17/jun',wpp:'5551990012'}]},
+  {t:'Perdido',c:'var(--red)',cards:[{n:'Cerealista Norte',s:'Roberto Costa . PJ',v:'R$15.000',d:'18/jun',mot:'Preço',wpp:'5511990013'},{n:'Frigorífico São Paulo',s:'Marcos Pereira . PJ',v:'R$38.000',d:'16/jun',mot:'Concorrente',wpp:'5511990014'}]},
 ];
 
-// ── NAV ────────────────────────────────────────────────
+// -- NAV ------------------------------------------------
 const titles={
-  dash:['Dashboard','Visão executiva · Junho 2026'],
-  leads:['Leads','Gestão de oportunidades — ✏️ histórico · 💬 WhatsApp · 📉 perda'],
+  dash:['Dashboard','Visão executiva . Junho 2026'],
+  leads:['Leads','Gestão de oportunidades - ✏️ histórico . 💬 WhatsApp . 📉 perda'],
   funil:['Funil de Vendas','Pipeline com rastreabilidade completa'],
-  vendedores:['Vendedores','Performance individual · PJ e CLT'],
+  vendedores:['Vendedores','Performance individual . PJ e CLT'],
   perdas:['Análise de Perdas','Por que os negócios não fecharam'],
   carteira:['Proteção de Carteira','Visibilidade e continuidade do relacionamento com clientes'],
-  relatorios:['Relatórios','Métricas comerciais · 2026'],
+  relatorios:['Relatórios','Métricas comerciais . 2026'],
   automacoes:['Automações','Regras ativas do CRM'],
   propostas:['Propostas Comerciais','Gere, envie e acompanhe propostas com 1 clique'],
   contratos:['Contratos','Gestão de vigência, renovação e valores'],
@@ -975,13 +975,13 @@ function go(id,el){
   if(id==='portal')renderPortal();
 }
 
-// ── CONFIG AUTOMAÇÕES ───────────────────────────────────
+// -- CONFIG AUTOMAÇÕES -----------------------------------
 const configTemplates = {
   0: {
     campos: [
       {label:'Tempo de disparo',tipo:'select',id:'cfg-tempo',opcoes:['Imediatamente (até 2 min)','5 minutos','15 minutos','30 minutos','1 hora'],val:0},
       {label:'Canal de envio',tipo:'select',id:'cfg-canal',opcoes:['WhatsApp','E-mail','WhatsApp + E-mail'],val:0},
-      {label:'Mensagem de boas-vindas',tipo:'textarea',id:'cfg-msg',val:'Olá {nome}! 👋 Bem-vindo(a)! Sou da equipe comercial da Smart Automation. Vi que você demonstrou interesse — posso ajudar?'},
+      {label:'Mensagem de boas-vindas',tipo:'textarea',id:'cfg-msg',val:'Olá {nome}! 👋 Bem-vindo(a)! Sou da equipe comercial da Smart Automation. Vi que você demonstrou interesse - posso ajudar?'},
     ],
     extra:'Variáveis disponíveis: {nome}, {empresa}, {produto}, {vendedor}'
   },
@@ -999,7 +999,7 @@ const configTemplates = {
       {label:'Alertar após quantos dias sem contato',tipo:'select',id:'cfg-inativo',opcoes:['3 dias','5 dias','7 dias','10 dias','15 dias'],val:2},
       {label:'Notificar quem',tipo:'select',id:'cfg-notif',opcoes:['Apenas gestor','Apenas vendedor responsável','Gestor + Vendedor'],val:2},
       {label:'Canal da notificação',tipo:'select',id:'cfg-canal3',opcoes:['WhatsApp','E-mail','WhatsApp + E-mail'],val:0},
-      {label:'Incluir sugestão de ação na notificação',tipo:'select',id:'cfg-sug',opcoes:['Sim — sugerir mensagem de follow-up','Não — apenas alertar'],val:0},
+      {label:'Incluir sugestão de ação na notificação',tipo:'select',id:'cfg-sug',opcoes:['Sim - sugerir mensagem de follow-up','Não - apenas alertar'],val:0},
     ],
     extra:''
   },
@@ -1024,7 +1024,7 @@ const configTemplates = {
     campos: [
       {label:'Canal de envio',tipo:'select',id:'cfg-canal5',opcoes:['WhatsApp','E-mail','WhatsApp + E-mail'],val:1},
       {label:'Mensagem de fechamento',tipo:'textarea',id:'cfg-msg5',val:'Parabéns {nome}! 🎉 Estamos muito felizes em tê-los como clientes! Em breve nossa equipe entrará em contato para iniciar o processo de onboarding.'},
-      {label:'Enviar material de onboarding',tipo:'select',id:'cfg-onboard',opcoes:['Sim — link do material','Não'],val:0},
+      {label:'Enviar material de onboarding',tipo:'select',id:'cfg-onboard',opcoes:['Sim - link do material','Não'],val:0},
     ],
     extra:'Variáveis disponíveis: {nome}, {empresa}, {produto}, {vendedor}, {valor}'
   },
@@ -1080,7 +1080,7 @@ function abrirConfig(i){
 
 function salvarConfig(i){
   closeModal('ov-config');
-  toast('Configurações salvas · ' + autosData[i].nome.split(' ')[0], 'ok');
+  toast('Configurações salvas . ' + autosData[i].nome.split(' ')[0], 'ok');
 }
 
 function tglAutoFromConfig(i){
@@ -1090,7 +1090,7 @@ function tglAutoFromConfig(i){
   toast('Automação ' + (autosData[i].on ? 'ativada' : 'pausada'), 'ok');
 }
 
-// ── TOAST ──────────────────────────────────────────────
+// -- TOAST ----------------------------------------------
 function toast(m,t='ok'){
   // Dispara evento para módulos ouvirem
   try{ window.dispatchEvent(new CustomEvent('crm:toast-fired',{detail:{m,t}})); }catch(e){}
@@ -1103,12 +1103,12 @@ function toast(m,t='ok'){
   setTimeout(()=>el.classList.remove('show'),3000);
 }
 
-// ── MODALS ─────────────────────────────────────────────
+// -- MODALS ---------------------------------------------
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
-// ── LEADS ──────────────────────────────────────────────
+// -- LEADS ----------------------------------------------
 function renderLeads(lista){
   const tb=document.getElementById('leads-tb');
   const em=document.getElementById('leads-empty');
@@ -1136,7 +1136,7 @@ function cicleBadge(id,el){
   const nx=c[(i+1)%c.length];
   d.et=nx[0];d.etxt=nx[1];
   el.className='badge '+nx[0];el.textContent=nx[1];
-  toast('Etapa → '+nx[1],'ok');
+  toast('Etapa -> '+nx[1],'ok');
 }
 function buscar(q){
   if(!q.trim()){renderLeads(leads);return;}
@@ -1154,15 +1154,17 @@ function salvarLead(){
   const w=document.getElementById('f-wpp').value.trim();
   if(!n){toast('Informe o nome','err');return;}
   if(!w){toast('Informe o WhatsApp','err');return;}
-  leads.unshift({id:Date.now(),nome:n,cnpj:document.getElementById('f-cnpj').value||'—',prod:document.getElementById('f-prod').value,orig:document.getElementById('f-orig').value,vend:document.getElementById('f-vend').value.split(' · ')[0],tipo:document.getElementById('f-vend').value.split(' · ')[1]||'PJ',wpp:w,val:document.getElementById('f-val').value||'—',vn:0,et:'b-novo',etxt:'Novo',ult:'Hoje',obs:document.getElementById('f-obs').value,email:document.getElementById('f-email').value});
+  leads.unshift({id:Date.now(),nome:n,cnpj:document.getElementById('f-cnpj').value||'-',prod:document.getElementById('f-prod').value,orig:document.getElementById('f-orig').value,vend:document.getElementById('f-vend').value.split(' . ')[0],tipo:document.getElementById('f-vend').value.split(' . ')[1]||'PJ',wpp:w,val:document.getElementById('f-val').value||'-',vn:0,et:'b-novo',etxt:'Novo',ult:'Hoje',obs:document.getElementById('f-obs').value,email:document.getElementById('f-email').value});
   renderLeads(leads);
   document.getElementById('ms-tot').textContent=leads.length;
   document.getElementById('nb-leads').textContent=leads.length;
   closeModal('ov-lead');
   toast(n+' cadastrado!','ok');
+  // Envia para o Apps Script
+  _salvarLeadBackend(leads[0]);
 }
 
-// ── DETALHE ─────────────────────────────────────────────
+// -- DETALHE ---------------------------------------------
 function verDet(id){
   const d=leads.find(x=>x.id===id);if(!d)return;
   const ini=d.nome.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
@@ -1170,7 +1172,7 @@ function verDet(id){
   document.getElementById('det-b').innerHTML=`
     <div style="display:flex;align-items:center;gap:13px;margin-bottom:14px;padding-bottom:13px;border-bottom:1px solid var(--line)">
       <div style="width:44px;height:44px;border-radius:10px;background:var(--grd);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0">${ini}</div>
-      <div><div style="font-size:14px;font-weight:700">${d.nome}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${d.vend} · <span class="badge ${d.tipo==='PJ'?'b-pj':'b-clt'}">${d.tipo}</span> · <span class="badge ${d.et}">${d.etxt}</span></div></div>
+      <div><div style="font-size:14px;font-weight:700">${d.nome}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${d.vend} . <span class="badge ${d.tipo==='PJ'?'b-pj':'b-clt'}">${d.tipo}</span> . <span class="badge ${d.et}">${d.etxt}</span></div></div>
     </div>
     <div class="det-grid">
       <div class="di"><div class="dl">CNPJ</div><div class="dv">${d.cnpj}</div></div>
@@ -1183,10 +1185,10 @@ function verDet(id){
     ${d.obs?`<div style="background:var(--bg3);border-radius:7px;padding:9px 11px;margin-bottom:13px;font-size:11px;color:var(--muted)">📝 ${d.obs}</div>`:''}
     <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;font-family:'JetBrains Mono',monospace">Linha do tempo</div>
     <div class="tl-list">
-      <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-body"><div class="tl-txt">Lead cadastrado · Origem: ${d.orig}</div><div class="tl-dt">05/06/26 · ${d.vend}</div></div></div>
-      <div class="tl-item"><div class="tl-dot" style="background:var(--blue2)"></div><div class="tl-body"><div class="tl-txt">Primeiro contato via WhatsApp</div><div class="tl-dt">08/06/26 · ${d.vend}</div></div></div>
-      <div class="tl-item"><div class="tl-dot" style="background:var(--blue3)"></div><div class="tl-body"><div class="tl-txt">Proposta enviada — ${d.val}</div><div class="tl-dt">15/06/26 · ${d.vend}</div></div></div>
-      <div class="tl-item"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-body"><div class="tl-txt">Último contato · Status: ${d.etxt}</div><div class="tl-dt">${d.ult} · ${d.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-body"><div class="tl-txt">Lead cadastrado . Origem: ${d.orig}</div><div class="tl-dt">05/06/26 . ${d.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--blue2)"></div><div class="tl-body"><div class="tl-txt">Primeiro contato via WhatsApp</div><div class="tl-dt">08/06/26 . ${d.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--blue3)"></div><div class="tl-body"><div class="tl-txt">Proposta enviada - ${d.val}</div><div class="tl-dt">15/06/26 . ${d.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-body"><div class="tl-txt">Último contato . Status: ${d.etxt}</div><div class="tl-dt">${d.ult} . ${d.vend}</div></div></div>
     </div>
     <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.18);border-radius:8px;padding:12px;margin-top:12px">
       <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">💬 Enviar via WhatsApp</div>
@@ -1206,12 +1208,12 @@ function verDet(id){
   openModal('ov-det');
 }
 
-// ── PERDA ───────────────────────────────────────────────
+// -- PERDA -----------------------------------------------
 let perdaId=null;
 function abrirPerda(id){
   const d=leads.find(x=>x.id===id);if(!d)return;
   perdaId=id;
-  document.getElementById('pl-info').textContent=`Lead: ${d.nome} · ${d.val}`;
+  document.getElementById('pl-info').textContent=`Lead: ${d.nome} . ${d.val}`;
   document.getElementById('pm').value='';document.getElementById('po').value='';
   openModal('ov-perda');
 }
@@ -1224,21 +1226,21 @@ function confirmarPerda(){
   toast('Perda registrada: '+m,'ok');
 }
 
-// ── WHATSAPP ────────────────────────────────────────────
+// -- WHATSAPP --------------------------------------------
 function wpp(num,nome,prod){
   const n=num.replace(/\D/g,'');
   const m=encodeURIComponent(`Olá ${nome}! 👋\n\nPassando para verificar o andamento sobre *${prod}*.\n\nEstamos à disposição!\n\n_Smart Automation CRM_`);
   window.open(`https://wa.me/${n}?text=${m}`,'_blank');
-  toast('WhatsApp aberto · '+nome,'wpp');
+  toast('WhatsApp aberto . '+nome,'wpp');
 }
 function wppTpl(num,nome,tpl){
   const n=num.replace(/\D/g,'');
   const msgs={followup:`Olá ${nome}! 👋\n\nEstamos verificando o status da nossa proposta. Tiveram a oportunidade de analisar?\n\nEstamos à disposição! 😊\n\n_Smart Automation CRM_`,recompra:`Olá ${nome}! 🔁\n\nPassando para verificar o prazo de reposição. Posso agilizar o pedido?\n\n_Smart Automation CRM_`};
   window.open(`https://wa.me/${n}?text=${encodeURIComponent(msgs[tpl]||msgs.followup)}`,'_blank');
-  toast('WhatsApp aberto · '+nome,'wpp');
+  toast('WhatsApp aberto . '+nome,'wpp');
 }
 
-// ── KANBAN ──────────────────────────────────────────────
+// -- KANBAN ----------------------------------------------
 function renderKanban(){
   document.getElementById('kanban').innerHTML=kanbanEtapas.map(e=>`
     <div class="kcol">
@@ -1253,7 +1255,7 @@ function renderKanban(){
     </div>`).join('');
 }
 
-// ── VENDEDORES ──────────────────────────────────────────
+// -- VENDEDORES ------------------------------------------
 function renderVend(){
   document.getElementById('vg').innerHTML=vendedores.map(v=>`
     <div class="vc">
@@ -1266,12 +1268,12 @@ function renderVend(){
         <div class="vs"><div class="vv" style="color:var(--green)">${v.fech}</div><div class="vlb">FECHADOS</div></div>
         <div class="vs"><div class="vv" style="color:${v.conv>=20?'var(--green)':'var(--red)'}">${v.conv}%</div><div class="vlb">CONV.</div></div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Meta: ${v.meta} leads · <b style="color:var(--green)">${v.val} fechado</b></div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Meta: ${v.meta} leads . <b style="color:var(--green)">${v.val} fechado</b></div>
       <div class="pb"><div class="pf" style="width:${Math.min(100,Math.round(v.leads/v.meta*100))}%"></div></div>
     </div>`).join('');
 }
 
-// ── PERDAS ──────────────────────────────────────────────
+// -- PERDAS ----------------------------------------------
 function renderPerdas(){
   document.getElementById('perdas-list').innerHTML=motivosPerdas.map(m=>`
     <div style="display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:7px;padding:9px 12px;border:1px solid var(--line)">
@@ -1286,11 +1288,11 @@ function renderPerdas(){
     <td><span class="badge b-prop">${p.etapa}</span></td>
     <td><span class="badge b-perd">${p.motivo}</span></td>
     <td style="font-size:10px;color:var(--muted)">${p.data}</td>
-    <td style="font-size:10px;color:var(--muted)">${p.obs||'—'}</td>
+    <td style="font-size:10px;color:var(--muted)">${p.obs||'-'}</td>
   </tr>`).join('');
 }
 
-// ── CARTEIRA ────────────────────────────────────────────
+// -- CARTEIRA --------------------------------------------
 let transfId=null;
 function renderCarteira(){
   const rc={alto:'var(--red)',medio:'var(--amber)',baixo:'var(--green)'};
@@ -1300,7 +1302,7 @@ function renderCarteira(){
       <div class="cru" style="background:${rc[c.risco]};box-shadow:0 0 5px ${rc[c.risco]}"></div>
       <div class="crin">
         <div class="crn">${c.nome}</div>
-        <div class="crm">Vendedor: <b style="color:var(--white)">${c.vend}</b> · ${c.prod} · ${c.dias}d de relacionamento · Últ: ${c.ult}</div>
+        <div class="crm">Vendedor: <b style="color:var(--white)">${c.vend}</b> . ${c.prod} . ${c.dias}d de relacionamento . Últ: ${c.ult}</div>
       </div>
       <span class="badge ${c.risco==='alto'?'b-alto':c.risco==='medio'?'b-med':'b-baix'}">${rl[c.risco]}</span>
       <div class="ac">
@@ -1335,7 +1337,7 @@ function renderCarteira(){
 function abrirTransf(id){
   const c=clientesRisco.find(x=>x.id===id);if(!c)return;
   transfId=id;
-  document.getElementById('tr-info').innerHTML=`<div style="font-weight:700">${c.nome}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${c.prod} · ${c.val} · ${c.dias} dias de relacionamento</div>`;
+  document.getElementById('tr-info').innerHTML=`<div style="font-weight:700">${c.nome}</div><div style="font-size:10px;color:var(--muted);margin-top:2px">${c.prod} . ${c.val} . ${c.dias} dias de relacionamento</div>`;
   document.getElementById('tr-de').value=c.vend+' ('+c.tipo+')';
   document.getElementById('tr-para').value='';
   document.getElementById('tr-briefing').innerHTML=`
@@ -1351,19 +1353,19 @@ function confirmarTransf(){
   const p=document.getElementById('tr-para').value;
   if(!p){toast('Selecione o novo vendedor','err');return;}
   const c=clientesRisco.find(x=>x.id===transfId);
-  if(c)c.vend=p.split(' · ')[0];
+  if(c)c.vend=p.split(' . ')[0];
   renderCarteira();closeModal('ov-transf');
   toast(`✓ ${c?.nome} transferido com briefing!`,'ok');
 }
 function confirmarMassa(){
   const de=document.getElementById('tm-de').value;
   closeModal('ov-massa');
-  toast('Redistribuindo carteira de '+de.split(' · ')[0]+'...','info');
+  toast('Redistribuindo carteira de '+de.split(' . ')[0]+'...','info');
   setTimeout(()=>toast('Carteira redistribuída! Briefings enviados.','ok'),2000);
 }
 function verHistCarteira(id){
   const c=clientesRisco.find(x=>x.id===id);if(!c)return;
-  document.getElementById('det-t').textContent=c.nome+' — Histórico preservado';
+  document.getElementById('det-t').textContent=c.nome+' - Histórico preservado';
   document.getElementById('det-b').innerHTML=`
     <div class="det-grid">
       <div class="di"><div class="dl">Vendedor</div><div class="dv">${c.vend}</div></div>
@@ -1372,11 +1374,11 @@ function verHistCarteira(id){
       <div class="di"><div class="dl">Relacionamento</div><div class="dv">${c.dias} dias</div></div>
     </div>
     <div class="tl-list">
-      <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-body"><div class="tl-txt">Primeiro contato — apresentação da linha ${c.prod}</div><div class="tl-dt">05/05/26 · ${c.vend}</div></div></div>
-      <div class="tl-item"><div class="tl-dot" style="background:var(--blue2)"></div><div class="tl-body"><div class="tl-txt">Reunião por videochamada — demonstração e tabela de preços</div><div class="tl-dt">12/05/26 · ${c.vend}</div></div></div>
-      <div class="tl-item"><div class="tl-dot" style="background:var(--blue3)"></div><div class="tl-body"><div class="tl-txt">Objeção registrada: questionaram prazo de entrega para a região</div><div class="tl-dt">18/05/26 · ${c.vend}</div></div></div>
-      <div class="tl-item"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-body"><div class="tl-txt">Proposta formal enviada — ${c.val} · aguardando aprovação</div><div class="tl-dt">28/05/26 · ${c.vend}</div></div></div>
-      <div class="tl-item"><div class="tl-dot" style="background:var(--muted)"></div><div class="tl-body"><div class="tl-txt">Follow-up automático via WhatsApp — sem retorno</div><div class="tl-dt">${c.ult} · Sistema</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--green)"></div><div class="tl-body"><div class="tl-txt">Primeiro contato - apresentação da linha ${c.prod}</div><div class="tl-dt">05/05/26 . ${c.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--blue2)"></div><div class="tl-body"><div class="tl-txt">Reunião por videochamada - demonstração e tabela de preços</div><div class="tl-dt">12/05/26 . ${c.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--blue3)"></div><div class="tl-body"><div class="tl-txt">Objeção registrada: questionaram prazo de entrega para a região</div><div class="tl-dt">18/05/26 . ${c.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--amber)"></div><div class="tl-body"><div class="tl-txt">Proposta formal enviada - ${c.val} . aguardando aprovação</div><div class="tl-dt">28/05/26 . ${c.vend}</div></div></div>
+      <div class="tl-item"><div class="tl-dot" style="background:var(--muted)"></div><div class="tl-body"><div class="tl-txt">Follow-up automático via WhatsApp - sem retorno</div><div class="tl-dt">${c.ult} . Sistema</div></div></div>
     </div>
     <div style="background:var(--blue4);border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin-top:12px;font-size:11px;color:var(--muted)">
       🔒 <b style="color:var(--blue3)">Histórico protegido no CRM.</b> Se ${c.vend} for desligado hoje, este contexto completo permanece acessível instantaneamente para o próximo vendedor.
@@ -1388,7 +1390,7 @@ function verHistCarteira(id){
   openModal('ov-det');
 }
 
-// ── AUTOMAÇÕES ──────────────────────────────────────────
+// -- AUTOMAÇÕES ------------------------------------------
 function renderAutos(){
   const el=document.getElementById('autos');el.innerHTML='';
   autosData.forEach((a,i)=>{
@@ -1412,21 +1414,21 @@ function tglAuto(i){
   toast('Automação '+(on?'ativada':'pausada'),'ok');
 }
 
-// ── ATIVIDADE ───────────────────────────────────────────
+// -- ATIVIDADE -------------------------------------------
 function renderAtiv(){
   document.getElementById('atividade').innerHTML=[
-    {cor:'var(--green)',txt:'<b style="color:var(--green)">Negócio fechado</b> · Comercial Agro Norte — R$32.000',t:'Há 2h'},
-    {cor:'var(--blue3)',txt:'Lead <b style="color:var(--blue3)">cadastrado</b> · Agropecuária Sul Ltda. · Roberto Costa',t:'Há 4h'},
-    {cor:'var(--red)',txt:'<b style="color:var(--red)">Perda registrada</b> · Frigorífico São Paulo · Concorrente',t:'Há 6h'},
-    {cor:'var(--blue2)',txt:'Proposta <b style="color:var(--blue2)">enviada</b> · Frigorífico Bela Vista — R$28.000',t:'Ontem 16:30'},
-    {cor:'var(--amber)',txt:'⚠️ Lead <b style="color:var(--amber)">parado +7 dias</b> · Cerealista Oeste GO',t:'Ontem 09:00'},
+    {cor:'var(--green)',txt:'<b style="color:var(--green)">Negócio fechado</b> . Comercial Agro Norte - R$32.000',t:'Há 2h'},
+    {cor:'var(--blue3)',txt:'Lead <b style="color:var(--blue3)">cadastrado</b> . Agropecuária Sul Ltda. . Roberto Costa',t:'Há 4h'},
+    {cor:'var(--red)',txt:'<b style="color:var(--red)">Perda registrada</b> . Frigorífico São Paulo . Concorrente',t:'Há 6h'},
+    {cor:'var(--blue2)',txt:'Proposta <b style="color:var(--blue2)">enviada</b> . Frigorífico Bela Vista - R$28.000',t:'Ontem 16:30'},
+    {cor:'var(--amber)',txt:'⚠️ Lead <b style="color:var(--amber)">parado +7 dias</b> . Cerealista Oeste GO',t:'Ontem 09:00'},
   ].map(a=>`<div style="display:flex;gap:9px;align-items:flex-start">
     <div style="width:6px;height:6px;border-radius:50%;background:${a.cor};margin-top:5px;flex-shrink:0;box-shadow:0 0 4px ${a.cor}"></div>
     <div><div style="font-size:11px;line-height:1.5">${a.txt}</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${a.t}</div></div>
   </div>`).join('');
 }
 
-// ── CHATBOT ─────────────────────────────────────────────
+// -- CHATBOT ---------------------------------------------
 let chatOpen=false,chatLog=[];
 function toggleChat(){
   chatOpen=!chatOpen;
@@ -1452,7 +1454,7 @@ async function sendMsg(){
 async function askBot(txt){
   if(!chatLog.find(m=>m.txt===txt&&m.from==='user'))addMsg('user',txt);
   addMsg('bot','',true);
-  const ctx=`Você é o assistente do CRM da Smart Automation. Dados: 47 leads ativos, 23 negócios abertos, 9 fechamentos, 12 perdas este mês. Pipeline: R$340k. Vendedores: Carlos Silva (PJ,4 fechamentos,28% conversão), Ana Ferreira (CLT,3,27%), Roberto Costa (PJ,1,11%), Juliana Mendes (CLT,1,13%), Marcos Pereira (PJ,0,0%). 7 clientes em risco de carteira — vinculados a apenas 1 vendedor. Principal risco: Carlos Silva tem 6 clientes exclusivos. Lead parado +7 dias: Cerealista Oeste GO (Roberto Costa). Motivos de perda: preço 33%, concorrente 25%, sem retorno 17%, budget 17%. Taxa conversão: 19% — meta 25%. Responda em português, direto, com emojis quando adequado. Máximo 3 parágrafos.`;
+  const ctx=`Você é o assistente do CRM da Smart Automation. Dados: 47 leads ativos, 23 negócios abertos, 9 fechamentos, 12 perdas este mês. Pipeline: R$340k. Vendedores: Carlos Silva (PJ,4 fechamentos,28% conversão), Ana Ferreira (CLT,3,27%), Roberto Costa (PJ,1,11%), Juliana Mendes (CLT,1,13%), Marcos Pereira (PJ,0,0%). 7 clientes em risco de carteira - vinculados a apenas 1 vendedor. Principal risco: Carlos Silva tem 6 clientes exclusivos. Lead parado +7 dias: Cerealista Oeste GO (Roberto Costa). Motivos de perda: preço 33%, concorrente 25%, sem retorno 17%, budget 17%. Taxa conversão: 19% - meta 25%. Responda em português, direto, com emojis quando adequado. Máximo 3 parágrafos.`;
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:ctx,messages:[...chatLog.filter(m=>m.from==='user').slice(-3).map(m=>({role:'user',content:m.txt})),{role:'user',content:txt}]})});
     const data=await r.json();
@@ -1462,12 +1464,12 @@ async function askBot(txt){
   }
 }
 
-// ── CHARTS ──────────────────────────────────────────────
+// -- CHARTS ----------------------------------------------
 Chart.defaults.color='#5A6E99';
 Chart.defaults.font.family="'Inter',sans-serif";
 Chart.defaults.font.size=11;
 
-// Cores monocromáticas azul → preto
+// Cores monocromáticas azul -> preto
 const BLUES=['#1E6FFF','#2D84FF','#4A9AFF','#6DAAFF','#8FBBFF','#0A3BAA','#062B8A'];
 function mkGrd(ctx,c1,c2){const g=ctx.createLinearGradient(0,0,0,200);g.addColorStop(0,c1);g.addColorStop(1,c2);return g;}
 const LINE_COLOR='rgba(30,111,255,0.12)';
@@ -1489,7 +1491,7 @@ function initDash(){
   },options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{boxWidth:9,padding:11}}}}});
 
   new Chart(document.getElementById('c-vend'),{type:'bar',data:{
-    labels:['Carlos·PJ','Ana·CLT','Roberto·PJ','Juliana·CLT','Marcos·PJ'],
+    labels:['Carlos.PJ','Ana.CLT','Roberto.PJ','Juliana.CLT','Marcos.PJ'],
     datasets:[
       {label:'Fechamentos',data:[4,3,1,1,0],backgroundColor:'#1E6FFF',borderRadius:4},
       {label:'Perdas',data:[2,3,4,2,1],backgroundColor:'#0A3BAA',borderRadius:4},
@@ -1500,7 +1502,7 @@ function initDash(){
 function initVend(){
   if(d2)return;d2=true;
   new Chart(document.getElementById('c-rank'),{type:'bar',data:{
-    labels:['Carlos·PJ','Ana·CLT','Juliana·CLT','Roberto·PJ','Marcos·PJ'],
+    labels:['Carlos.PJ','Ana.CLT','Juliana.CLT','Roberto.PJ','Marcos.PJ'],
     datasets:[{label:'R$k',data:[68,42,14,12,0],
       backgroundColor:ctx=>mkGrd(ctx.chart.ctx,'#2D84FF','#062B8A'),
       borderRadius:5,borderWidth:0}]
@@ -1534,13 +1536,13 @@ function initRel(){
 }
 
 
-// ── DADOS EXTRAS ──────────────────────────────────────
+// -- DADOS EXTRAS --------------------------------------
 const propostas = [
   {id:'P001',cliente:'Frigorífico Bela Vista',prod:'Linha Premium',vend:'Carlos Silva',val:'R$28.000',valN:28000,valid:'30/07/26',status:'Aguardando aprovação',prob:75,emitida:'22/06/26'},
   {id:'P002',cliente:'Distribuidora Norte S.A.',prod:'Mix Completo',vend:'Ana Ferreira',val:'R$45.000',valN:45000,valid:'15/07/26',status:'Em negociação',prob:65,emitida:'20/06/26'},
   {id:'P003',cliente:'Cooperativa Sul PR',prod:'Linha Premium',vend:'Ana Ferreira',val:'R$34.000',valN:34000,valid:'28/07/26',status:'Enviada',prob:80,emitida:'18/06/26'},
   {id:'P004',cliente:'Distribuidora Central SP',prod:'Mix Completo',vend:'Marcos Pereira',val:'R$55.000',valN:55000,valid:'10/07/26',status:'Aguardando aprovação',prob:60,emitida:'19/06/26'},
-  {id:'P005',cliente:'Comercial Agro Norte',prod:'Linha Premium',vend:'Carlos Silva',val:'R$32.000',valN:32000,valid:'—',status:'Aprovada ✓',prob:100,emitida:'15/06/26'},
+  {id:'P005',cliente:'Comercial Agro Norte',prod:'Linha Premium',vend:'Carlos Silva',val:'R$32.000',valN:32000,valid:'-',status:'Aprovada ✓',prob:100,emitida:'15/06/26'},
   {id:'P006',cliente:'Pet Food Varejo RJ',prod:'Linha Gatos',vend:'Juliana Mendes',val:'R$6.200',valN:6200,valid:'20/07/26',status:'Enviada',prob:55,emitida:'23/06/26'},
 ];
 
@@ -1553,10 +1555,10 @@ const contratos = [
 ];
 
 const produtos = [
-  {nome:'Linha Premium — Cães',cat:'Cães',tag:'Premium',cor:'#1E6FFF',preco:'R$4.500/ton',minPed:'2 ton',desc_v:5,desc_g:12,estoque:'142 ton',margem:'38%'},
-  {nome:'Linha Economy — Cães',cat:'Cães',tag:'Economy',cor:'#2D84FF',preco:'R$2.800/ton',minPed:'3 ton',desc_v:8,desc_g:15,estoque:'210 ton',margem:'28%'},
-  {nome:'Linha Premium — Gatos',cat:'Gatos',tag:'Premium',cor:'#4A9AFF',preco:'R$5.200/ton',minPed:'1 ton',desc_v:4,desc_g:10,estoque:'87 ton',margem:'42%'},
-  {nome:'All Life — Gatos',cat:'Gatos',tag:'All Life',cor:'#6DAAFF',preco:'R$3.600/ton',minPed:'1 ton',desc_v:6,desc_g:12,estoque:'65 ton',margem:'32%'},
+  {nome:'Linha Premium - Cães',cat:'Cães',tag:'Premium',cor:'#1E6FFF',preco:'R$4.500/ton',minPed:'2 ton',desc_v:5,desc_g:12,estoque:'142 ton',margem:'38%'},
+  {nome:'Linha Economy - Cães',cat:'Cães',tag:'Economy',cor:'#2D84FF',preco:'R$2.800/ton',minPed:'3 ton',desc_v:8,desc_g:15,estoque:'210 ton',margem:'28%'},
+  {nome:'Linha Premium - Gatos',cat:'Gatos',tag:'Premium',cor:'#4A9AFF',preco:'R$5.200/ton',minPed:'1 ton',desc_v:4,desc_g:10,estoque:'87 ton',margem:'42%'},
+  {nome:'All Life - Gatos',cat:'Gatos',tag:'All Life',cor:'#6DAAFF',preco:'R$3.600/ton',minPed:'1 ton',desc_v:6,desc_g:12,estoque:'65 ton',margem:'32%'},
   {nome:'Mix Completo B2B',cat:'Mix',tag:'Especial',cor:'#8FBBFF',preco:'Sob consulta',minPed:'10 ton',desc_v:3,desc_g:8,estoque:'Sob pedido',margem:'35%'},
   {nome:'Linha Filhotes Premium',cat:'Cães',tag:'Filhotes',cor:'#0A3BAA',preco:'R$5.800/ton',minPed:'500 kg',desc_v:5,desc_g:10,estoque:'34 ton',margem:'44%'},
 ];
@@ -1579,7 +1581,7 @@ const forecast_data = [
   {cli:'Laticínio Central MG',vend:'Carlos Silva',val:18000,etapa:'Em contato',prob:30,pond:5400,prev:'Ago/26'},
 ];
 
-// ── PROPOSTAS ─────────────────────────────────────────
+// -- PROPOSTAS -----------------------------------------
 const propStatus = {
   'Aprovada ✓':     {cls:'b-fech',txt:'Aprovada ✓'},
   'Aguardando aprovação':{cls:'b-cont',txt:'Aguardando'},
@@ -1609,7 +1611,7 @@ function renderPropostas(){
 function verProposta(id){
   const p = propostas.find(x=>x.id===id);
   if(!p)return;
-  document.getElementById('det-t').textContent = `Proposta ${p.id} · ${p.cliente}`;
+  document.getElementById('det-t').textContent = `Proposta ${p.id} . ${p.cliente}`;
   const steps = ['Rascunho','Enviada','Em negociação','Aguardando aprovação','Aprovada ✓'];
   const ci = steps.indexOf(p.status);
   const stepsHTML = steps.map((s,i)=>`<span class="status-step ${i<ci?'done':i===ci?'active':''}">${i<ci?'✓':i===ci?'●':'○'} ${s}</span>${i<steps.length-1?'<span class="status-arrow">›</span>':''}`).join('');
@@ -1626,8 +1628,8 @@ function verProposta(id){
     <div style="background:var(--blue4);border:1px solid var(--line);border-radius:8px;padding:11px 13px;margin-bottom:12px">
       <div style="font-size:10px;color:var(--blue3);font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-bottom:7px">LINHA DO TEMPO</div>
       <div class="timeline-prop">
-        <div class="tl-prop"><div style="width:6px;height:6px;border-radius:50%;background:var(--blue2);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:11px">Proposta gerada no CRM</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${p.emitida} · ${p.vend}</div></div></div>
-        <div class="tl-prop"><div style="width:6px;height:6px;border-radius:50%;background:var(--blue3);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:11px">PDF enviado por e-mail e WhatsApp</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${p.emitida} · Sistema</div></div></div>
+        <div class="tl-prop"><div style="width:6px;height:6px;border-radius:50%;background:var(--blue2);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:11px">Proposta gerada no CRM</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${p.emitida} . ${p.vend}</div></div></div>
+        <div class="tl-prop"><div style="width:6px;height:6px;border-radius:50%;background:var(--blue3);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:11px">PDF enviado por e-mail e WhatsApp</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${p.emitida} . Sistema</div></div></div>
         <div class="tl-prop"><div style="width:6px;height:6px;border-radius:50%;background:var(--amber);margin-top:4px;flex-shrink:0"></div><div><div style="font-size:11px">Status atual: ${p.status}</div><div style="font-size:10px;color:var(--muted);margin-top:1px">Probabilidade: ${p.prob}%</div></div></div>
       </div>
     </div>
@@ -1662,7 +1664,7 @@ function gerarProposta(){
   const desc=parseFloat(document.getElementById('fp-desc')?.value)||0;
   const total=qtd*unit*(1-desc/100);
   const id='P00'+(propostas.length+1);
-  propostas.unshift({id,cliente:c,prod:document.getElementById('fp-prod').value,vend:document.getElementById('fp-vend').value.split(' · ')[0],val:'R$'+total.toLocaleString('pt-BR'),valN:total,valid:document.getElementById('fp-valid').value,status:'Rascunho',prob:50,emitida:new Date().toLocaleDateString('pt-BR')});
+  propostas.unshift({id,cliente:c,prod:document.getElementById('fp-prod').value,vend:document.getElementById('fp-vend').value.split(' . ')[0],val:'R$'+total.toLocaleString('pt-BR'),valN:total,valid:document.getElementById('fp-valid').value,status:'Rascunho',prob:50,emitida:new Date().toLocaleDateString('pt-BR')});
   renderPropostas();
   document.getElementById('nb-prop').textContent=propostas.length;
   closeModal('ov-proposta');
@@ -1670,7 +1672,7 @@ function gerarProposta(){
   setTimeout(()=>toast('PDF pronto para envio!','ok'),1800);
 }
 
-// ── CONTRATOS ─────────────────────────────────────────
+// -- CONTRATOS -----------------------------------------
 function renderContratos(){
   document.getElementById('contratos-list').innerHTML = contratos.map(c=>{
     const pct=Math.min(100,Math.round((365-c.vencDias)/365*100));
@@ -1679,8 +1681,8 @@ function renderContratos(){
     return `<div class="contrato-card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
         <div>
-          <div style="font-size:13px;font-weight:700">${c.cliente} <span style="font-size:10px;color:var(--muted);font-weight:400">· ${c.id}</span></div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.prod} · ${c.vend}</div>
+          <div style="font-size:13px;font-weight:700">${c.cliente} <span style="font-size:10px;color:var(--muted);font-weight:400">. ${c.id}</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${c.prod} . ${c.vend}</div>
         </div>
         <div style="text-align:right">
           <div style="font-size:14px;font-weight:800;color:var(--green)">${c.val}</div>
@@ -1702,7 +1704,7 @@ function renderContratos(){
   }).join('');
 }
 
-// ── PRODUTOS ──────────────────────────────────────────
+// -- PRODUTOS ------------------------------------------
 function renderProdutos(){
   document.getElementById('prod-grid').innerHTML = produtos.map(p=>`
     <div class="prod-card" onclick="toast('Editando: '+'${p.nome}'+'','info')">
@@ -1734,7 +1736,7 @@ function renderProdutos(){
   </tr>`).join('');
 }
 
-// ── METAS ─────────────────────────────────────────────
+// -- METAS ---------------------------------------------
 function renderMetas(){
   const totalMeta = metas_data.reduce((a,m)=>a+m.meta,0);
   const totalReal = metas_data.reduce((a,m)=>a+m.realizado,0);
@@ -1742,7 +1744,7 @@ function renderMetas(){
   document.getElementById('metas-list').innerHTML = `
     <div class="card" style="margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="ct">Meta do time · Junho 2026</div>
+        <div class="ct">Meta do time . Junho 2026</div>
         <div style="font-size:12px;font-weight:700;color:${pctTime>=80?'var(--green)':'var(--amber)'}">R$ ${totalReal.toLocaleString('pt-BR')} / R$ ${totalMeta.toLocaleString('pt-BR')} (${pctTime}%)</div>
       </div>
       <div class="meta-barra" style="height:16px;border-radius:8px">
@@ -1757,7 +1759,7 @@ function renderMetas(){
           <div class="va" style="background:linear-gradient(135deg,var(--blue),var(--blue2))">${m.ini}</div>
           <div style="flex:1">
             <div style="font-size:13px;font-weight:700">${m.nome} <span class="badge ${m.tipo==='PJ'?'b-pj':'b-clt'}">${m.tipo}</span></div>
-            <div style="font-size:10px;color:var(--muted);margin-top:2px">Meta: R$${m.meta.toLocaleString('pt-BR')} · Realizado: <b style="color:${cor}">R$${m.realizado.toLocaleString('pt-BR')}</b></div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">Meta: R$${m.meta.toLocaleString('pt-BR')} . Realizado: <b style="color:${cor}">R$${m.realizado.toLocaleString('pt-BR')}</b></div>
           </div>
           <div style="text-align:right;font-size:22px;font-weight:900;color:${cor}">${pct}%</div>
         </div>
@@ -1771,12 +1773,12 @@ function renderMetas(){
     }).join('')}`;
 }
 
-// ── FORECAST ──────────────────────────────────────────
+// -- FORECAST ------------------------------------------
 let fcInit=false;
 function renderForecast(){
   document.getElementById('forecast-list').innerHTML = forecast_data.filter(f=>f.prob>=65).map(f=>`
     <div class="forecast-item">
-      <div style="flex:1"><div style="font-size:12px;font-weight:700">${f.cli}</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${f.vend} · ${f.etapa}</div></div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:700">${f.cli}</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${f.vend} . ${f.etapa}</div></div>
       <div style="text-align:right">
         <div style="font-size:13px;font-weight:800;color:var(--green)">R$${f.val.toLocaleString('pt-BR')}</div>
         <div style="font-size:10px;color:var(--blue3);font-weight:700">${f.prob}% prob.</div>
@@ -1808,7 +1810,7 @@ function renderForecast(){
   }
 }
 
-// ── PORTAL CLIENTE ────────────────────────────────────
+// -- PORTAL CLIENTE ------------------------------------
 function renderPortal(){
   const prop = propostas[0];
   document.getElementById('portal-content').innerHTML = `
@@ -1818,7 +1820,7 @@ function renderPortal(){
           <div class="logo-ico" style="width:44px;height:44px;font-size:16px">SA</div>
           <div>
             <div style="font-size:15px;font-weight:800">Smart Automation</div>
-            <div style="font-size:11px;color:var(--blue3)">Portal do Cliente · Acompanhamento de Proposta</div>
+            <div style="font-size:11px;color:var(--blue3)">Portal do Cliente . Acompanhamento de Proposta</div>
           </div>
         </div>
         <div style="font-size:14px;font-weight:600;margin-bottom:4px">Olá, ${prop.cliente}!</div>
@@ -1841,11 +1843,57 @@ function renderPortal(){
           <button class="btn btn-g" style="flex:1" onclick="wpp('5511999990001','${prop.cliente}','suporte')">💬 Falar com consultor</button>
         </div>
       </div>
-      <div style="text-align:center;font-size:10px;color:var(--muted)">🔒 Acesso seguro · Smart Automation · smarttautomation.com.br</div>
+      <div style="text-align:center;font-size:10px;color:var(--muted)">🔒 Acesso seguro . Smart Automation . smarttautomation.com.br</div>
     </div>`;
 }
 
-// ── INIT ────────────────────────────────────────────────
+
+// -- BACKEND SYNC --------------------------------------------------------------
+async function _salvarLeadBackend(lead) {
+  const url = window.__CRM_CONFIG__?.appsScriptUrl;
+  if (!url || url.includes('SUA_URL')) return; // sem backend configurado
+
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'inserirLead', dados: lead })
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      console.log('[Backend] Lead salvo na planilha:', data.id);
+    } else {
+      console.warn('[Backend] Erro ao salvar:', data.erro);
+      // Enfileira offline
+      if (window.SmartOfflineDB) {
+        SmartOfflineDB.PedidosOffline.enfileirar(lead, 'novo_lead');
+      }
+    }
+  } catch (err) {
+    console.warn('[Backend] Offline - lead salvo na fila:', err.message);
+    if (window.SmartOfflineDB) {
+      SmartOfflineDB.PedidosOffline.enfileirar(lead, 'novo_lead');
+    }
+  }
+}
+
+async function _testarBackend() {
+  const url = window.__CRM_CONFIG__?.appsScriptUrl;
+  if (!url || url.includes('SUA_URL')) {
+    toast('URL do Apps Script não configurada', 'err');
+    return;
+  }
+  try {
+    const resp = await fetch(url + '?acao=ping');
+    const data = await resp.json();
+    if (data.ok) toast('Backend conectado! ' + data.msg, 'ok');
+    else toast('Erro: ' + JSON.stringify(data), 'err');
+  } catch (err) {
+    toast('Backend offline: ' + err.message, 'err');
+  }
+}
+
+// -- INIT ------------------------------------------------
 renderLeads(leads);
 renderKanban();
 renderVend();
@@ -1883,14 +1931,12 @@ initDash();
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
-     MÓDULOS SMART CRM — offline, notificações, copilot, PWA
-     Gerado automaticamente — Smart Automation
-     ═══════════════════════════════════════════════════════ -->
+
+
+<!-- MODULOS SMART CRM - offline, notificacoes, copilot, PWA -->
 <script>
-/* ── OFFLINE-DB.JS ─────────────────────────────────────── */
 /**
- * Smart Automation CRM — Offline Database
+ * Smart Automation CRM - Offline Database
  * Motor: IndexedDB via wrapper assíncrono
  * Tabelas: clientes, produtos, leads, pedidos_offline, notificacoes, sync_log
  */
@@ -1901,7 +1947,7 @@ const SmartOfflineDB = (() => {
   const DB_VERSION = 1;
   let   db         = null;
 
-  // ── SCHEMA DAS STORES ───────────────────────────────────────────────────────
+  // -- SCHEMA DAS STORES -------------------------------------------------------
   const STORES = {
     clientes: {
       keyPath: 'id',
@@ -2064,7 +2110,7 @@ const SmartOfflineDB = (() => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // LEADS — CRUD com controle de perfil
+  // LEADS - CRUD com controle de perfil
   // ═══════════════════════════════════════════════════════════════════════════
   const Leads = {
     async getAll(perfil = null, vendedorNome = null) {
@@ -2245,7 +2291,7 @@ const SmartOfflineDB = (() => {
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SINCRONIZADOR — envia fila para Apps Script / Protheus
+  // SINCRONIZADOR - envia fila para Apps Script / Protheus
   // ═══════════════════════════════════════════════════════════════════════════
   const Sincronizador = {
     APPS_SCRIPT_URL: window.__CRM_CONFIG__?.appsScriptUrl || '',
@@ -2346,7 +2392,7 @@ const SmartOfflineDB = (() => {
      */
     async carregarDadosServidor(perfil, vendedorNome) {
       if (!navigator.onLine) {
-        console.log('[Sync] Offline — usando dados locais.');
+        console.log('[Sync] Offline - usando dados locais.');
         return false;
       }
 
@@ -2391,7 +2437,7 @@ const SmartOfflineDB = (() => {
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // CLIENTE PROTHEUS — integração REST com ERP
+  // CLIENTE PROTHEUS - integração REST com ERP
   // ═══════════════════════════════════════════════════════════════════════════
   const ProtheusClient = {
     BASE_URL: window.__CRM_CONFIG__?.protheusUrl || '',
@@ -2411,7 +2457,7 @@ const SmartOfflineDB = (() => {
      */
     async postPedido(pedido) {
       if (!navigator.onLine) {
-        console.log('[Protheus] Offline — enfileirando pedido:', pedido.id);
+        console.log('[Protheus] Offline - enfileirando pedido:', pedido.id);
         return PedidosOffline.enfileirar(pedido, 'pedido_protheus');
       }
 
@@ -2466,7 +2512,7 @@ const SmartOfflineDB = (() => {
      */
     async getClientes(filtros = {}) {
       if (!navigator.onLine) {
-        console.log('[Protheus] Offline — lendo clientes do IndexedDB');
+        console.log('[Protheus] Offline - lendo clientes do IndexedDB');
         return Clientes.getAll();
       }
 
@@ -2580,7 +2626,7 @@ const SmartOfflineDB = (() => {
   // LISTENER: online → processa fila automaticamente
   // ═══════════════════════════════════════════════════════════════════════════
   window.addEventListener('online', async () => {
-    console.log('[OfflineDB] Conexão restaurada — iniciando sincronização...');
+    console.log('[OfflineDB] Conexão restaurada - iniciando sincronização...');
     window.dispatchEvent(new CustomEvent('crm:online'));
 
     // Pequena espera para garantir que a rede está estável
@@ -2593,7 +2639,7 @@ const SmartOfflineDB = (() => {
   });
 
   window.addEventListener('offline', () => {
-    console.log('[OfflineDB] Conexão perdida — modo offline ativo.');
+    console.log('[OfflineDB] Conexão perdida - modo offline ativo.');
     window.dispatchEvent(new CustomEvent('crm:offline'));
   });
 
@@ -2644,16 +2690,15 @@ SmartOfflineDB.init().catch(console.error);
 </script>
 
 <script>
-/* ── NOTIFICATIONS.JS ──────────────────────────────────── */
 /**
- * Smart Automation CRM — Central de Notificações
+ * Smart Automation CRM - Central de Notificações
  * Eventos: Risco de Carteira, Lead respondeu, Lead parado, Meta atingida, Sync completo
  * Persistência: Google Sheets (via Apps Script) + IndexedDB local
  */
 
 const SmartNotificacoes = (() => {
 
-  // ── CONFIGURAÇÃO ─────────────────────────────────────────────────────────
+  // -- CONFIGURAÇÃO ---------------------------------------------------------
   const APPS_SCRIPT_URL = window.__CRM_CONFIG__?.appsScriptUrl || '';
 
   // Tipos de notificação com configuração de ícone e cor
@@ -2723,7 +2768,7 @@ const SmartNotificacoes = (() => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // UI — BADGE NO HEADER
+  // UI - BADGE NO HEADER
   // ═══════════════════════════════════════════════════════════════════════════
   function _renderBadge() {
     // Remove existente
@@ -2778,7 +2823,7 @@ const SmartNotificacoes = (() => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // UI — MODAL DE NOTIFICAÇÕES
+  // UI - MODAL DE NOTIFICAÇÕES
   // ═══════════════════════════════════════════════════════════════════════════
   function _renderModal() {
     document.getElementById('notif-modal-overlay')?.remove();
@@ -3188,7 +3233,7 @@ const SmartNotificacoes = (() => {
   function _mostrarToast(notif) {
     const tipo = TIPOS[notif.tipo] || { icon: '🔔', cor: '#6B7299' };
     window.dispatchEvent(new CustomEvent('crm:toast', {
-      detail: { msg: `${tipo.icon} ${notif.titulo} — ${notif.mensagem}`, tipo: 'info' }
+      detail: { msg: `${tipo.icon} ${notif.titulo} - ${notif.mensagem}`, tipo: 'info' }
     }));
   }
 
@@ -3263,7 +3308,7 @@ const SmartNotificacoes = (() => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // POLLING — verifica servidor periodicamente
+  // POLLING - verifica servidor periodicamente
   // ═══════════════════════════════════════════════════════════════════════════
   function _iniciarPolling() {
     if (_pollingInterval) clearInterval(_pollingInterval);
@@ -3370,7 +3415,7 @@ const SmartNotificacoes = (() => {
       if (_pollingInterval) clearInterval(_pollingInterval);
     });
 
-    // Service Worker — notificação de clique
+    // Service Worker - notificação de clique
     navigator.serviceWorker?.addEventListener('message', (event) => {
       if (event.data?.type === 'NOTIFICATION_CLICK') {
         abrirModal();
@@ -3436,9 +3481,8 @@ window.SmartNotificacoes = SmartNotificacoes;
 </script>
 
 <script>
-/* ── COPILOT.JS ────────────────────────────────────────── */
 /**
- * Smart Automation CRM — Copilot IA
+ * Smart Automation CRM - Copilot IA
  * Motor: Anthropic claude-sonnet-4-6
  * Níveis: Admin (visão total) | Vendedor (apenas própria carteira)
  * Anti-alucinação: System Prompt com dados reais como única fonte da verdade
@@ -3446,7 +3490,7 @@ window.SmartNotificacoes = SmartNotificacoes;
 
 const SmartCopilot = (() => {
 
-  // ── ESTADO ───────────────────────────────────────────────────────────────
+  // -- ESTADO ---------------------------------------------------------------
   let _perfil       = 'admin';
   let _vendedorNome = null;
   let _historico    = [];          // Histórico da conversa (context window)
@@ -3454,15 +3498,15 @@ const SmartCopilot = (() => {
   let _processando  = false;
   const MAX_HIST    = 10;          // Máximo de turnos mantidos no contexto
 
-  // ── SYSTEM PROMPTS POR PERFIL ─────────────────────────────────────────────
+  // -- SYSTEM PROMPTS POR PERFIL ---------------------------------------------
 
   /**
    * Monta o System Prompt injetando os dados reais do CRM como fonte da verdade.
-   * Isso previne alucinação — a IA só pode afirmar o que está nos dados fornecidos.
+   * Isso previne alucinação - a IA só pode afirmar o que está nos dados fornecidos.
    */
   function _buildSystemPrompt(dadosCRM) {
     const base = `
-Você é o Copilot do CRM Smart Automation — um assistente de inteligência artificial especializado em análise de vendas e gestão comercial.
+Você é o Copilot do CRM Smart Automation - um assistente de inteligência artificial especializado em análise de vendas e gestão comercial.
 
 REGRAS ABSOLUTAS (nunca viole):
 1. USE APENAS os dados fornecidos abaixo como fonte da verdade. Se a informação não estiver nos dados, diga "Não tenho essa informação nos dados atuais do CRM".
@@ -3496,7 +3540,7 @@ Seja analítico e estratégico. O gestor quer respostas que o ajudem a tomar dec
 
     } else {
       return base + `
-PERFIL DO USUÁRIO: Vendedor — ${_vendedorNome}
+PERFIL DO USUÁRIO: Vendedor - ${_vendedorNome}
 ESCOPO RESTRITO: Você só pode ver e comentar sobre dados da carteira de ${_vendedorNome}. 
 REGRA DE PRIVACIDADE: NUNCA mencione dados, leads, resultados ou informações de outros vendedores. Se perguntado sobre outros, responda: "Só tenho acesso à sua carteira."
 FUNÇÕES PRINCIPAIS:
@@ -3511,7 +3555,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
     }
   }
 
-  // ── UI: SIDEBAR ───────────────────────────────────────────────────────────
+  // -- UI: SIDEBAR -----------------------------------------------------------
   function _renderSidebar() {
     document.getElementById('copilot-sidebar')?.remove();
 
@@ -3537,7 +3581,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
           <div style="font-size:14px;font-weight:700;color:#fff">Copilot Smart CRM</div>
           <div style="font-size:11px;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:5px">
             <div style="width:6px;height:6px;border-radius:50%;background:#10B981;box-shadow:0 0 5px #10B981"></div>
-            ${_perfil === 'admin' ? 'Visão Admin — acesso total' : `Vendedor: ${_vendedorNome}`}
+            ${_perfil === 'admin' ? 'Visão Admin - acesso total' : `Vendedor: ${_vendedorNome}`}
           </div>
         </div>
         <button onclick="SmartCopilot.limparHistorico()" title="Limpar histórico"
@@ -3640,7 +3684,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
     }
   }
 
-  // ── ENVIO DE MENSAGEM ─────────────────────────────────────────────────────
+  // -- ENVIO DE MENSAGEM -----------------------------------------------------
   async function enviar() {
     const input = document.getElementById('copilot-input');
     const texto = input?.value.trim();
@@ -3721,7 +3765,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
     _atualizarContexto(_getContextoLabel());
   }
 
-  // ── COLETA DE DADOS DO CRM ────────────────────────────────────────────────
+  // -- COLETA DE DADOS DO CRM ------------------------------------------------
   async function _coletarDadosCRM() {
     const dados = {};
 
@@ -3743,7 +3787,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
       if (window.forecast_data)dados.forecast     = window.forecast_data;
       if (window.clientesRisco)dados.clientesRisco= window.clientesRisco;
 
-      // Filtra dados por perfil — NUNCA expõe dados de outros vendedores para um vendedor
+      // Filtra dados por perfil - NUNCA expõe dados de outros vendedores para um vendedor
       if (_perfil === 'vendedor' && _vendedorNome) {
         if (dados.leads)     dados.leads     = dados.leads.filter(l => l.vend === _vendedorNome);
         if (dados.propostas) dados.propostas = dados.propostas.filter(p => p.vend === _vendedorNome);
@@ -3767,7 +3811,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
   function _resumirDados(dados) {
     const resumo = {};
 
-    // Leads — mantém campos essenciais, limita quantidade
+    // Leads - mantém campos essenciais, limita quantidade
     if (dados.leads?.length) {
       resumo.leads = dados.leads.slice(0, 50).map(l => ({
         id: l.id, nome: l.nome, vend: l.vend, tipo: l.tipo,
@@ -3810,7 +3854,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
     return resumo;
   }
 
-  // ── HELPERS DE UI ─────────────────────────────────────────────────────────
+  // -- HELPERS DE UI ---------------------------------------------------------
   function _adicionarMensagem(role, texto) {
     const container = document.getElementById('copilot-msgs');
     if (!container) return;
@@ -3889,11 +3933,11 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
 
   function _getContextoLabel() {
     return _perfil === 'admin'
-      ? 'Visão completa — todos os vendedores e leads'
-      : `Sua carteira — ${_vendedorNome}`;
+      ? 'Visão completa - todos os vendedores e leads'
+      : `Sua carteira - ${_vendedorNome}`;
   }
 
-  // ── BOTÃO FLUTUANTE ───────────────────────────────────────────────────────
+  // -- BOTÃO FLUTUANTE -------------------------------------------------------
   function _renderBotaoFlutuante() {
     document.getElementById('copilot-fab')?.remove();
 
@@ -3922,7 +3966,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
     document.body.appendChild(fab);
   }
 
-  // ── API PÚBLICA ───────────────────────────────────────────────────────────
+  // -- API PÚBLICA -----------------------------------------------------------
   function init(perfil = 'admin', vendedorNome = null) {
     _perfil       = perfil;
     _vendedorNome = vendedorNome;
@@ -3931,7 +3975,7 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
     _renderBotaoFlutuante();
     _renderSidebar();
 
-    console.log('[Copilot] Inicializado — perfil:', perfil, vendedorNome || '');
+    console.log('[Copilot] Inicializado - perfil:', perfil, vendedorNome || '');
   }
 
   function abrir() {
@@ -3971,25 +4015,23 @@ window.SmartCopilot = SmartCopilot;
 </script>
 
 <script>
-/* ── CRM-INTEGRATION.JS ────────────────────────────────── */
 /**
- * Smart Automation CRM — Script de Integração
+ * Smart Automation CRM - Script de Integração
  *
  * COMO USAR: Adicione ao final do <body> do CRM, APÓS os outros scripts.
  *
  * Ordem de carregamento no HTML:
  * 1. <link rel="manifest" href="manifest.json">
- * 2. <script src="offline-db.js"></script>
- * 3. <script src="notifications.js"></script>
- * 4. <script src="copilot.js"></script>
- * 5. <script src="crm-integration.js"></script>  ← este arquivo
+ * 2. <script src="offline-db.js"><\/script>
+ * 3. <script src="notifications.js"><\/script>
+ * 4. <script src="copilot.js"><\/script>
+ * 5. <script src="crm-integration.js"><\/script>  ← este arquivo
  *
  * Para intranet: adicione os 4 scripts acima no HTML existente.
  * Para PWA instalável: adicione também o registro do SW abaixo.
  */
 
-// ── CONFIGURAÇÃO GLOBAL DO CRM ─────────────────────────────────────────────
-// EDITE AQUI: cole a URL do seu Apps Script após a Etapa 2
+// -- CONFIGURAÇÃO GLOBAL DO CRM ---------------------------------------------
 // Edite estes valores antes de publicar
 window.__CRM_CONFIG__ = {
   appsScriptUrl:  'https://script.google.com/macros/s/AKfycbxYR2aM_SIpClE_ugEtbTxhBcXKTCLITzkGj-awu5vl2By16-720SpeNbze0HFIuYPD/exec',   // URL do Web App do Google Apps Script
@@ -4017,7 +4059,7 @@ async function registrarServiceWorker() {
       const newWorker = reg.installing;
       newWorker?.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // Nova versão disponível — notifica o usuário
+          // Nova versão disponível - notifica o usuário
           _mostrarBannerAtualizacao(newWorker);
         }
       });
@@ -4128,7 +4170,7 @@ function _renderBannerOffline() {
     font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
   `;
   banner.innerHTML = `
-    📶 Modo offline — dados carregados localmente. Pedidos serão sincronizados ao reconectar.
+    📶 Modo offline - dados carregados localmente. Pedidos serão sincronizados ao reconectar.
     <span id="offline-pending" style="background:rgba(0,0,0,.15);padding:2px 8px;border-radius:10px">
       Verificando...
     </span>
@@ -4153,7 +4195,7 @@ window.addEventListener('online',  () => {
 window.addEventListener('offline', () => {
   _renderBannerOffline();
   window.dispatchEvent(new CustomEvent('crm:toast', {
-    detail: { msg: '📶 Sem internet — CRM em modo offline', tipo: 'info' }
+    detail: { msg: '📶 Sem internet - CRM em modo offline', tipo: 'info' }
   }));
 });
 
@@ -4237,7 +4279,7 @@ function _dispararNotifDemo() {
   }, 3000);
 }
 
-// ── INICIA TUDO ───────────────────────────────────────────────────────────────
+// -- INICIA TUDO ---------------------------------------------------------------
 // Aguarda o DOM estar pronto
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', inicializarCRM);
