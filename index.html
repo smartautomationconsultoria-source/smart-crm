@@ -2326,7 +2326,141 @@ function verProposta(id){
     </div>`;
   openModal('ov-det');
 }
-function gerarPDFproposta(id){toast('Gerando PDF da proposta...','info');setTimeout(()=>toast('PDF gerado com sucesso! Download iniciado.','ok'),1800);}
+function gerarPDFproposta(id){
+  const prop = propostas.find(x=>x.id===id);
+  if(!prop){ toast('Proposta não encontrada','err'); return; }
+  _gerarPDF_proposta(prop);
+}
+
+async function _gerarPDF_proposta(prop){
+  // Garante que jsPDF está carregado
+  await _garantirJsPDF();
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const W = doc.internal.pageSize.getWidth();
+  
+  // ── Cabeçalho ──────────────────────────────────────────
+  doc.setFillColor(30,111,255);
+  doc.rect(0,0,W,28,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('Smart Automation', 14, 12);
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.text('CRM Comercial - Proposta Comercial', 14, 20);
+  doc.setFontSize(9);
+  doc.text(new Date().toLocaleDateString('pt-BR'), W-14, 20, {align:'right'});
+
+  // ── Número e status ────────────────────────────────────
+  doc.setTextColor(30,111,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.text('Proposta ' + prop.id, 14, 40);
+  doc.setTextColor(100,100,100);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.text('Status: ' + prop.status, 14, 47);
+
+  // ── Linha divisória ────────────────────────────────────
+  doc.setDrawColor(30,111,255);
+  doc.setLineWidth(0.5);
+  doc.line(14, 51, W-14, 51);
+
+  // ── Dados da proposta ──────────────────────────────────
+  doc.setFontSize(10);
+  doc.setTextColor(0,0,0);
+  const dados = [
+    ['Cliente',        prop.cliente   || '-'],
+    ['Produto',        prop.prod      || '-'],
+    ['Vendedor',       prop.vend      || '-'],
+    ['Valor Total',    prop.val       || '-'],
+    ['Válida até',     prop.valid     || '-'],
+    ['Data emissão',   prop.emitida   || new Date().toLocaleDateString('pt-BR')],
+    ['Probabilidade',  (prop.prob||50) + '%'],
+  ];
+
+  if(typeof doc.autoTable === 'function'){
+    doc.autoTable({
+      head:[['Campo','Informação']],
+      body: dados,
+      startY: 57,
+      theme:'striped',
+      headStyles:{fillColor:[30,111,255],textColor:255,fontStyle:'bold'},
+      columnStyles:{0:{fontStyle:'bold',cellWidth:55},1:{cellWidth:120}},
+      margin:{left:14,right:14}
+    });
+  } else {
+    // Fallback manual se autoTable não carregou
+    let y = 60;
+    doc.setFontSize(10);
+    dados.forEach(([label, valor]) => {
+      doc.setFont('helvetica','bold'); doc.setTextColor(30,111,255);
+      doc.text(label + ':', 14, y);
+      doc.setFont('helvetica','normal'); doc.setTextColor(0,0,0);
+      doc.text(String(valor), 65, y);
+      y += 9;
+      doc.setDrawColor(220,220,220);
+      doc.setLineWidth(0.2);
+      doc.line(14, y-3, W-14, y-3);
+    });
+  }
+
+  // ── Barra de progresso da proposta ─────────────────────
+  const yFinal = doc.lastAutoTable?.finalY || 150;
+  doc.setFontSize(10);
+  doc.setFont('helvetica','bold');
+  doc.setTextColor(0,0,0);
+  doc.text('Etapas da proposta:', 14, yFinal+14);
+  const etapas = ['Rascunho','Enviada','Em negociação','Aguardando aprovação','Aprovada'];
+  const ci = etapas.indexOf(prop.status);
+  let ex = 14;
+  etapas.forEach((et,i)=>{
+    const ativo = i <= ci;
+    doc.setFillColor(ativo?30:200, ativo?111:200, ativo?255:200);
+    doc.roundedRect(ex, yFinal+18, 34, 8, 2, 2,'F');
+    doc.setTextColor(ativo?255:120,ativo?255:120,ativo?255:120);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7);
+    doc.text(et, ex+17, yFinal+23, {align:'center'});
+    ex += 37;
+  });
+
+  // ── Rodapé ─────────────────────────────────────────────
+  const H = doc.internal.pageSize.getHeight();
+  doc.setFillColor(245,247,255);
+  doc.rect(0, H-18, W, 18, 'F');
+  doc.setTextColor(100,100,100);
+  doc.setFontSize(8);
+  doc.setFont('helvetica','normal');
+  doc.text('Smart Automation · smarttautomation.com.br · (19) 99558-6012', 14, H-7);
+  doc.text('Proposta gerada automaticamente pelo CRM Smart Automation', W-14, H-7, {align:'right'});
+
+  // ── Download ────────────────────────────────────────────
+  const nome = 'Proposta_' + prop.id + '_' + (prop.cliente||'cliente').replace(/\s/g,'-') + '.pdf';
+  doc.save(nome);
+  toast('PDF gerado: ' + nome, 'ok');
+}
+
+async function _garantirJsPDF(){
+  if(window.jspdf) return;
+  // Carrega dinamicamente se não estiver disponível
+  await new Promise((resolve, reject) => {
+    const s1 = document.createElement('script');
+    s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s1.onload = () => {
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js';
+      s2.onload = resolve;
+      s2.onerror = resolve; // continua mesmo sem autotable
+      document.head.appendChild(s2);
+    };
+    s1.onerror = reject;
+    document.head.appendChild(s1);
+    setTimeout(resolve, 5000); // timeout de 5s
+  });
+}
 function enviarProposta(id){const p=propostas.find(x=>x.id===id);toast('Enviando proposta '+p?.id+' para '+p?.cliente+'...','info');setTimeout(()=>toast('Proposta enviada por e-mail!','ok'),1500);}
 function abrirModalNovaProposta(){
   const d=new Date();d.setDate(d.getDate()+15);
@@ -2537,12 +2671,9 @@ function renderPortal(){
 
 
 // -- EXPORTAR PDF / CSV -------------------------------------------
-function exportarLeadsPDF(){
-  if(!window.jspdf){
-    toast('Aguardando carregamento do PDF...','info');
-    setTimeout(exportarLeadsPDF, 1000);
-    return;
-  }
+async function exportarLeadsPDF(){
+  await _garantirJsPDF();
+  if(!window.jspdf){ toast('Erro ao carregar gerador de PDF','err'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'landscape' });
 
@@ -2576,8 +2707,9 @@ function exportarLeadsPDF(){
   toast('PDF exportado!','ok');
 }
 
-function exportarRelatoriosPDF(){
-  if(!window.jspdf){ toast('Aguardando PDF...','info'); setTimeout(exportarRelatoriosPDF,1000); return; }
+async function exportarRelatoriosPDF(){
+  await _garantirJsPDF();
+  if(!window.jspdf){ toast('Erro ao carregar gerador de PDF','err'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
