@@ -322,148 +322,83 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 </style>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// PWA SETUP COMPLETO — manifest inline + ícones canvas + SW blob
-// ═══════════════════════════════════════════════════════════════
+// PWA: gera ícone via canvas e configura manifest
 (function() {
-
-  // Gera ícone SA como canvas Data URL
-  function gerarIcone(size) {
-    const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    // Fundo gradiente azul
-    const grad = ctx.createLinearGradient(0, 0, size, size);
-    grad.addColorStop(0, '#1E6FFF');
-    grad.addColorStop(1, '#0A3BAA');
-    // Arredondado
-    const r = size * 0.22;
+  function makeIcon(size) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    const g = ctx.createLinearGradient(0,0,size,size);
+    g.addColorStop(0,'#1E6FFF'); g.addColorStop(1,'#0A3BAA');
+    const r = size*0.2;
     ctx.beginPath();
-    ctx.moveTo(r, 0); ctx.lineTo(size-r, 0);
-    ctx.quadraticCurveTo(size, 0, size, r);
-    ctx.lineTo(size, size-r);
-    ctx.quadraticCurveTo(size, size, size-r, size);
-    ctx.lineTo(r, size); ctx.quadraticCurveTo(0, size, 0, size-r);
-    ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
-    ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
-    // Texto SA
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold ' + Math.round(size * 0.38) + 'px Arial, sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('SA', size/2, size/2);
-    return canvas.toDataURL('image/png');
+    ctx.moveTo(r,0); ctx.lineTo(size-r,0);
+    ctx.quadraticCurveTo(size,0,size,r);
+    ctx.lineTo(size,size-r);
+    ctx.quadraticCurveTo(size,size,size-r,size);
+    ctx.lineTo(r,size); ctx.quadraticCurveTo(0,size,0,size-r);
+    ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+    ctx.closePath(); ctx.fillStyle=g; ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.font='bold '+Math.round(size*.38)+'px Arial';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('SA',size/2,size/2);
+    return c.toDataURL('image/png');
   }
 
-  // Gera os tamanhos necessários
-  const icon192 = gerarIcone(192);
-  const icon512 = gerarIcone(512);
-  const icon144 = gerarIcone(144);
+  const i192 = makeIcon(192);
+  const i512 = makeIcon(512);
 
-  // Define apple touch icon
-  const appleLink = document.getElementById('apple-touch-icon-link');
-  if (appleLink) {
-    appleLink.rel = 'apple-touch-icon';
-    appleLink.href = icon192;
-  }
+  // Apple touch icon
+  const atl = document.createElement('link');
+  atl.rel='apple-touch-icon'; atl.href=i192;
+  document.head.appendChild(atl);
 
-  // Cria manifest inline como Blob URL
-  const manifestData = {
-    name: 'Smart Automation CRM',
-    short_name: 'Smart CRM',
-    description: 'CRM Comercial Smart Automation',
-    start_url: './',
-    scope: './',
-    display: 'standalone',
-    orientation: 'any',
-    background_color: '#060A14',
-    theme_color: '#1E6FFF',
-    lang: 'pt-BR',
-    icons: [
-      { src: icon144, sizes: '144x144', type: 'image/png', purpose: 'any maskable' },
-      { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-      { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
-    ],
-    shortcuts: [
-      { name: 'Novo Lead', short_name: 'Lead', url: './?acao=novo-lead', icons:[{src:icon192,sizes:'192x192'}] },
-      { name: 'Dashboard', short_name: 'Dashboard', url: './?acao=dashboard', icons:[{src:icon192,sizes:'192x192'}] }
+  // Manifest via Blob
+  const mf = {
+    name:'Smart Automation CRM', short_name:'Smart CRM',
+    description:'CRM Comercial Smart Automation',
+    start_url:'https://smartautomationconsultoria-source.github.io/smart-crm/', scope:'https://smartautomationconsultoria-source.github.io/smart-crm/', display:'standalone',
+    background_color:'#060A14', theme_color:'#1E6FFF', lang:'pt-BR',
+    icons:[
+      {src:i192, sizes:'192x192', type:'image/png', purpose:'any maskable'},
+      {src:i512, sizes:'512x512', type:'image/png', purpose:'any maskable'}
     ]
   };
+  const mfBlob = new Blob([JSON.stringify(mf)],{type:'application/manifest+json'});
+  const mfURL  = URL.createObjectURL(mfBlob);
+  let mfLink = document.getElementById('pwa-manifest-link');
+  if(!mfLink){ mfLink=document.createElement('link'); mfLink.rel='manifest'; document.head.appendChild(mfLink); }
+  mfLink.href = mfURL;
 
-  const manifestBlob = new Blob([JSON.stringify(manifestData)], {type:'application/json'});
-  const manifestURL  = URL.createObjectURL(manifestBlob);
-  const manifestLink = document.getElementById('pwa-manifest-link');
-  if (manifestLink) {
-    manifestLink.href = manifestURL;
-    console.log('[PWA] Manifest configurado via Blob URL');
-  }
-  
-  // Força o Chrome a re-verificar instalabilidade
-  window._pwaManifestURL = manifestURL;
-
-  // Registra Service Worker como Blob (não precisa de arquivo sw.js externo)
-  const swCode = `
-const CACHE = 'smart-crm-v2';
-const ASSETS = ['./', './index.html'];
-
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE)
-      .then(c => c.addAll(ASSETS).catch(()=>{}))
-      .then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', e => {
-  if (!e.request.url.startsWith('http')) return;
-  if (e.request.url.includes('anthropic.com')) return;
-  if (e.request.url.includes('script.google.com')) return;
-  e.respondWith(
-    fetch(e.request)
-      .then(r => {
-        if (r && r.status === 200 && r.type !== 'opaque') {
-          const clone = r.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return r;
-      })
-      .catch(() => caches.match(e.request))
-  );
-});
-
-self.addEventListener('message', e => {
-  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
-});
-`;
-
-  // SW via inline script tag (mais compatível que Blob URL)
-  if ('serviceWorker' in navigator) {
+  // Service Worker (inline como Blob — sem precisar de sw.js no servidor)
+  // Só registra SW em GitHub Pages (não em preview)
+  const _inPreview = location.hostname.includes('claudeusercontent') ||
+                     location.protocol !== 'https:';
+  if ('serviceWorker' in navigator && !_inPreview) {
+    const sw = `const CACHE='smart-crm-v3';self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','./index.html']).catch(()=>{})).then(()=>self.skipWaiting()));});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});self.addEventListener('fetch',e=>{const u=e.request.url;if(!u.startsWith('http')||u.includes('anthropic')||u.includes('script.google'))return;e.respondWith(fetch(e.request).then(r=>{if(r&&r.ok){const cl=r.clone();caches.open(CACHE).then(c=>c.put(e.request,cl));}return r;}).catch(()=>caches.match(e.request)));});`;
     try {
-      // Cria sw.js dinamicamente como arquivo servível
-      const swBlob = new Blob([swCode], {type: 'application/javascript'});
+      const swBlob = new Blob([sw],{type:'application/javascript'});
       const swURL  = URL.createObjectURL(swBlob);
-      // Tenta registrar — pode falhar em alguns hosts, mas não quebra o app
       navigator.serviceWorker.register(swURL)
-        .then(reg => {
-          console.log('[PWA] Service Worker OK');
-          window._swReg = reg;
-        })
-        .catch(() => {
-          // Silencia erro — app funciona sem SW
-          console.log('[PWA] SW não disponível neste contexto (normal em alguns hosts)');
-        });
-    } catch(e) {
-      console.log('[PWA] SW ignorado:', e.message);
-    }
+        .then(()=>{ console.log('[PWA] Service Worker ativo'); window._pwaSwAtivo=true; })
+        .catch(()=>{});
+    } catch(e){}
   }
 
+  // Prompt de instalação
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    window._pwaPrompt=e;
+    const btn=document.getElementById('pwa-btn');
+    if(btn){btn.style.borderColor='#10B981';btn.style.color='#10B981';btn.innerHTML='📲 Instalar App ✓';}
+    console.log('[PWA] Pronto para instalar!');
+  });
+  window.addEventListener('appinstalled',()=>{
+    const btn=document.getElementById('pwa-btn');
+    if(btn) btn.style.display='none';
+    console.log('[PWA] App instalado!');
+  });
 })();
 </script>
 
@@ -938,9 +873,9 @@ self.addEventListener('message', e => {
   <div class="chdr">
     <div class="chdr-ico">🤖</div>
     <div style="flex:1">
-      <div class="chn">Copilot Smart CRM</div>
+      <div class="chn">Assistente Smart CRM</div>
       <div class="chs">
-        <div class="cdot" id="bot-status-dot"></div>
+        <div class="cdot" id="bot-status-dot" style="background:var(--green,#10B981)"></div>
         <span id="bot-status-txt">Conectando...</span>
       </div>
     </div>
@@ -1711,8 +1646,8 @@ Como posso ajudar?`;
 function _atualizarStatusBot(online){
   const dot = document.getElementById('bot-status-dot');
   const txt = document.getElementById('bot-status-txt');
-  if(dot) dot.style.background = online ? 'var(--green,#10B981)' : 'var(--muted,#6B7299)';
-  if(txt) txt.textContent = online ? 'IA ativa · claude-sonnet-4-6' : 'Conectando...';
+  if(dot) dot.style.background = 'var(--green,#10B981)';
+  if(txt) txt.textContent = 'Pergunte sobre o CRM';
 }
 
 function _atualizarCtxBar(){
@@ -1742,65 +1677,346 @@ async function askBot(pergunta){
   if(botProcessando) return;
   botProcessando = true;
 
-  // Adiciona mensagem do usuário
   if(pergunta) _addMsg('user', pergunta);
   _addTyping();
 
-  // Monta contexto dos dados do CRM
-  const dadosCRM = _coletarDadosCRM();
-  const perfil = currentPerfil?.role?.toLowerCase().includes('admin') ? 'admin' : 'vendedor';
-  const vendedorNome = perfil === 'vendedor' ? currentPerfil?.nome : null;
+  // Pequeno delay para parecer natural
+  await new Promise(r => setTimeout(r, 600));
 
-  const systemPrompt = _buildSystemPrompt(dadosCRM, perfil, vendedorNome);
+  const resposta = _responderSobreCRM(pergunta);
+  _removeTyping();
+  _addMsg('bot', resposta);
+  _atualizarStatusBot(true);
+  botProcessando = false;
+}
 
-  // Monta histórico
-  const messages = [
-    ...chatLog.slice(-MAX_HIST_BOT).map(m=>({role:m.from==='user'?'user':'assistant',content:m.txt})),
-    {role:'user',content:pergunta}
-  ];
+function _responderSobreCRM(pergunta) {
+  const q = pergunta.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // remove acentos
+    .replace(/[?!.,]/g, '');
 
-  try {
-    const appsUrl = window.__CRM_CONFIG__?.appsScriptUrl;
-    if(!appsUrl || appsUrl.includes('SUA_URL')){
-      throw new Error('URL do Apps Script não configurada.');
-    }
+  // Dashboard
+  if (/dashboard|painel|inicio|home|kpi|numero|card/.test(q)) {
+    return `**Dashboard — tela inicial do CRM**
 
-    // Chama via GET (evita CORS do Apps Script com POST)
-    const payload = {
-      acao:     'chatCopilot',
-      system:   systemPrompt,
-      msgs:     JSON.stringify(messages)
-    };
-    const qs = new URLSearchParams(payload).toString();
-    const resp = await fetch(appsUrl + '?' + qs, { method: 'GET' });
+📊 O Dashboard mostra um resumo da operação em tempo real:
 
-    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+• **Leads Ativos** — quantos leads estão em aberto
+• **Negócios Abertos** — valor total do pipeline (R$)
+• **Fechamentos** — vendas fechadas no mês
+• **Perdas** — negócios não fechados
+• **Conversão** — % de leads que viraram vendas
 
-    const data = await resp.json();
-    if(data.erro) throw new Error(data.erro);
-
-    const resposta = data.content?.[0]?.text || 'Não obtive resposta.';
-
-    chatLog.push({from:'user',txt:pergunta});
-    chatLog.push({from:'bot',txt:resposta});
-    if(chatLog.length > MAX_HIST_BOT*2) chatLog = chatLog.slice(-MAX_HIST_BOT*2);
-
-    _removeTyping();
-    _addMsg('bot', resposta);
-    _atualizarStatusBot(true);
-
-  } catch(err) {
-    _removeTyping();
-    let msgErr = '⚠️ Erro ao conectar com a IA.';
-    if(!navigator.onLine) msgErr = '📶 Sem internet. Reconecte para usar o Copilot.';
-    else if(err.message.includes('401')) msgErr = '🔑 Chave de API inválida. Verifique nas configurações.';
-    else if(err.message.includes('429')) msgErr = '⏳ Limite de requisições atingido. Aguarde um momento.';
-    _addMsg('bot', msgErr);
-    _atualizarStatusBot(false);
-    console.error('[Copilot]', err.message);
+💡 Todos os cards são clicáveis — clique em qualquer um para ir direto àquela seção.`;
   }
 
-  botProcessando=false;
+  // Login / senha
+  if (/login|senha|entrar|acesso|perfil/.test(q)) {
+    return `**Como fazer login:**
+
+1. Escolha seu **perfil de acesso**:
+   • 👑 **Admin** — vê tudo (gestor/CEO)
+   • 👤 **Vendedor** — vê apenas sua carteira
+2. Digite a senha e clique em **Entrar no CRM**
+
+🔑 Senha padrão: \`smart2026\`
+
+💡 O Admin vê todos os leads e relatórios. O Vendedor vê apenas seus próprios leads.`;
+  }
+
+  // Lead / cadastrar
+  if (/lead|cadastr|novo|adicionar|prospect|cliente/.test(q)) {
+    if (/exclui|delet|remov|apag/.test(q)) {
+      return `**Como excluir um lead:**
+
+1. Na lista de leads, clique no botão 🗑 vermelho na linha do lead
+2. Um modal de confirmação abre
+3. Confirme clicando em **Excluir**
+
+⚠️ A exclusão não pode ser desfeita. Se quiser manter o histórico, use **Registrar Perda** ao invés de excluir.`;
+    }
+    return `**Como cadastrar um novo lead:**
+
+1. Clique em **+ Novo Lead** (canto superior direito)
+2. Preencha: nome/empresa e WhatsApp (obrigatórios)
+3. Selecione produto, origem e vendedor responsável
+4. Clique em **Cadastrar**
+
+💡 O lead aparece na lista com status **Novo** e é salvo na planilha automaticamente.`;
+  }
+
+  // Etapa / funil / kanban
+  if (/etapa|funil|kanban|avancar|status|progresso|mover/.test(q)) {
+    return `**Etapas do funil de vendas:**
+\`Novo → Em contato → Proposta → Negociação → Fechado ✓\`
+
+**Como avançar um lead:**
+• Na lista, clique no **badge colorido** na coluna Etapa
+• Cada clique avança para a próxima etapa
+
+**Funil Kanban:**
+• Clique em "Funil de Vendas" na barra lateral
+• Veja todos os leads em colunas por etapa
+• Cada card tem botão 💬 para contato direto`;
+  }
+
+  // WhatsApp
+  if (/whatsapp|mensagem|enviar|contato|wpp/.test(q)) {
+    return `**Como enviar WhatsApp pelo CRM:**
+
+1. Na lista de leads, clique no botão 💬 verde
+2. O WhatsApp abre com mensagem já escrita personalizada
+3. Revise e clique em Enviar
+
+**Mensagem personalizada:**
+1. Clique em ✏️ para abrir o histórico do lead
+2. Role até a área de WhatsApp
+3. Escreva ou use um template
+4. Clique em **Enviar personalizada**`;
+  }
+
+  // Perda
+  if (/perd|perdido|motivo|nao fechou|registrar/.test(q)) {
+    return `**Como registrar motivo de perda:**
+
+1. Clique no botão 📉 vermelho na linha do lead
+2. Selecione o motivo:
+   • Preço acima do esperado
+   • Escolheu concorrente
+   • Cliente sem retorno
+   • Budget cortado
+   • Decisão adiada
+3. Adicione uma observação e clique em **Registrar perda**
+
+📊 Os dados aparecem em **Análise de Perdas** com gráficos.`;
+  }
+
+  // Carteira / proteção
+  if (/carteira|protec|vendedor sai|risco|transferir|historico/.test(q)) {
+    return `**Proteção de Carteira:**
+
+Quando um vendedor sai, o histórico dos clientes fica no CRM — não vai junto com ele.
+
+• 👁️ **Ver histórico** — abre todo o relacionamento com o cliente
+• 🔀 **Transferir** — passa o cliente para outro vendedor com briefing automático
+• **Transferência em massa** — redistribui toda a carteira de uma vez
+
+💡 A seção mostra clientes com **Risco Alto** (vinculados a 1 vendedor só).`;
+  }
+
+  // Proposta
+  if (/proposta|orcamento|comercial|pdf|enviar proposta/.test(q)) {
+    return `**Como criar uma proposta:**
+
+1. Vá em **Propostas** na barra lateral
+2. Clique em **+ Nova Proposta**
+3. Preencha: cliente, produto, quantidade, valor e desconto
+4. O valor total é calculado automaticamente
+5. Clique em **Gerar proposta**
+
+**O que fazer com a proposta:**
+• 📄 Gerar PDF
+• 📧 Enviar por e-mail
+• 💬 Enviar por WhatsApp
+• 👁️ Rastrear status`;
+  }
+
+  // Meta
+  if (/meta|objetivo|desempenho|performance|resultado|atingir/.test(q)) {
+    return `**Como acompanhar metas:**
+
+Vá em **Metas** na barra lateral.
+
+• 🟢 Verde = acima de 80% da meta
+• 🟡 Amarelo = entre 50% e 80%
+• 🔴 Vermelho = abaixo de 50%
+
+Cada vendedor tem card individual com: leads, contratos e receita gerada.
+
+💡 Só o Admin pode editar as metas — clique em **Editar metas**.`;
+  }
+
+  // Forecast
+  if (/forecast|previsao|projecao|probabilidade|pipeline receita/.test(q)) {
+    return `**Forecast — previsão de receita:**
+
+Vá em **Forecast** na barra lateral.
+
+• **Receita provável** — negócios com +70% de chance
+• **Receita ponderada** — valor × probabilidade
+• **Receita possível** — todo o pipeline
+
+💡 Compare a Receita Provável com a Meta do mês para saber se o time está no ritmo certo.`;
+  }
+
+  // Relatório / exportar
+  if (/relatorio|exportar|csv|excel|baixar|pdf relatorio/.test(q)) {
+    return `**Como exportar relatórios:**
+
+**Na tela Leads:**
+• ⬇ **CSV** — exporta tabela para Excel
+• ⬇ **PDF** — relatório formatado
+
+**Na tela Relatórios:**
+• ⬇ **Exportar PDF** — relatório executivo completo
+• 📊 **Looker Studio** — dashboard avançado
+• 📧 **Enviar por e-mail** — envio automático`;
+  }
+
+  // Automação
+  if (/automac|automatico|alerta|disparo|follow.?up|toggle/.test(q)) {
+    return `**Como configurar automações:**
+
+Vá em **Automações** na barra lateral.
+
+**Automações disponíveis:**
+• 💬 Boas-vindas ao novo lead (10 min após cadastro)
+• 🔁 Follow-up se não responder em 3 dias
+• ⚠️ Alerta de lead parado +7 dias
+• 📊 Relatório semanal às segundas 08h
+• 🛡️ Alerta de risco de carteira
+• 🎉 Mensagem quando negócio fecha
+
+**Ativar/Pausar:** clique no toggle à direita
+**Configurar:** clique em ⚙️ Config`;
+  }
+
+  // Instalar app
+  if (/instalar|app|aplicativo|celular|desktop|pwa|baixar app/.test(q)) {
+    return `**Como instalar o CRM como app:**
+
+Clique no botão **📲 Instalar App** no topo do CRM.
+
+**Desktop Chrome/Edge:**
+Clique no ícone ⊕ na barra de endereços
+
+**Android:**
+Menu ⋮ → "Adicionar à tela inicial"
+
+**iPhone/iPad (Safari):**
+Compartilhar → "Adicionar à Tela de Início"`;
+  }
+
+  // Contrato
+  if (/contrato|vigencia|venc|renovac/.test(q)) {
+    return `**Gestão de Contratos:**
+
+Vá em **Contratos** na barra lateral.
+
+• Barra de vigência colorida: 🟢 tranquilo / 🟡 atenção / 🔴 urgente
+• Botão **Renovar** aparece quando falta menos de 90 dias
+• MRR (receita recorrente mensal) aparece no topo
+
+💡 O sistema alerta automaticamente quando um contrato está próximo do vencimento.`;
+  }
+
+  // Vendedor
+  if (/vendedor|time|equipe|pj|clt|desempenho|ranking/.test(q)) {
+    return `**Painel de Vendedores:**
+
+Vá em **Vendedores** na barra lateral.
+
+Cada vendedor tem um card com:
+• Tipo de contrato (PJ ou CLT)
+• Leads ativos e fechamentos do mês
+• Taxa de conversão (🟢 boa / 🔴 precisa atenção)
+• Barra de progresso da meta
+
+**Gráficos:**
+• Ranking de volume de receita
+• Comparativo PJ vs CLT`;
+  }
+
+  // Notificações
+  if (/notific|sino|alerta|aviso/.test(q)) {
+    return `**Central de Notificações:**
+
+Clique no ícone 🔔 no topo do CRM.
+
+Tipos de alertas:
+• 🛡️ Risco de carteira
+• 💬 Lead respondeu via WhatsApp
+• ⚠️ Lead parado +7 dias
+• 📋 Contrato vencendo
+• 🎯 Meta atingida
+
+**Configurar notificações:**
+Clique na aba ⚙️ Configurar no painel de notificações.`;
+  }
+
+  // Produtos / preços
+  if (/produto|preco|catalogo|tabela|desconto/.test(q)) {
+    return `**Produtos & Preços:**
+
+Vá em **Produtos & Preços** na barra lateral.
+
+• Catálogo completo com preço, estoque e margem
+• Tabela de descontos por nível (vendedor e gerente)
+• Clique em qualquer produto para editar
+
+💡 Os preços são puxados automaticamente ao criar uma nova proposta.`;
+  }
+
+  // Ajuda geral
+  if (/ajuda|help|como usar|o que e|tutorial|aprender|ensinar/.test(q)) {
+    return `**Como usar este assistente:**
+
+Digite sua dúvida sobre qualquer parte do CRM e eu respondo!
+
+**Exemplos de perguntas:**
+• "Como cadastrar um lead?"
+• "O que é o funil de vendas?"
+• "Como exportar em PDF?"
+• "Como proteger a carteira?"
+• "Como configurar automações?"
+
+Ou clique no botão **?** no canto da tela para ver todos os tópicos.`;
+  }
+
+  // Copilot / IA
+  if (/copilot|ia|inteligencia|robo|assistente ia/.test(q)) {
+    return `**Copilot IA (botão 🤖):**
+
+O Copilot usa inteligência artificial para analisar dados reais do CRM.
+
+• Admin: analisa toda a operação (perdas, pipeline, riscos)
+• Vendedor: analisa apenas sua própria carteira
+
+**Exemplos de perguntas ao Copilot:**
+• "Quais leads estão parados?"
+• "Qual vendedor tem mais perdas?"
+• "Quais clientes estão em risco?"
+
+💡 O Copilot é diferente deste assistente — ele usa IA e precisa de internet.`;
+  }
+
+  // Saudação
+  if (/ola|oi|bom dia|boa tarde|boa noite|tudo bem|hey/.test(q)) {
+    return `Olá! 👋 Sou o assistente de ajuda do **Smart Automation CRM**.
+
+Posso te ensinar a usar qualquer funcionalidade do sistema!
+
+**Experimente perguntar:**
+• "Como cadastrar um lead?"
+• "O que é o funil de vendas?"
+• "Como proteger a carteira de clientes?"
+• "Como exportar relatórios?"
+
+Ou clique no **?** no canto da tela para ver todos os tópicos.`;
+  }
+
+  // Resposta padrão
+  return `Não encontrei uma resposta específica para **"${pergunta}"**.
+
+Tente perguntar sobre:
+• Lead, funil, etapa
+• WhatsApp, proposta
+• Meta, forecast, relatório
+• Carteira, vendedores
+• Automações, notificações
+• Instalar app, login
+
+Ou clique no botão **?** para ver todos os tópicos de ajuda.`;
 }
 
 function _buildSystemPrompt(dados, perfil, vendedorNome){
@@ -2423,21 +2639,81 @@ async function instalarCRMApp(){
   if(_pwaPrompt){
     _pwaPrompt.prompt();
     const r = await _pwaPrompt.userChoice;
-    if(r.outcome==='accepted') toast('Instalando CRM...','ok');
+    if(r.outcome==='accepted') toast('CRM instalado com sucesso!','ok');
     _pwaPrompt=null;
-  } else {
-    // Instrução manual por plataforma
-    const ua = navigator.userAgent.toLowerCase();
-    let msg = '';
-    if(/iphone|ipad|ipod/.test(ua)){
-      msg = '📱 iOS Safari:\n1. Toque no botão Compartilhar (quadrado com seta)\n2. Role e toque em "Adicionar à Tela de Início"\n3. Toque em "Adicionar"';
-    } else if(/android/.test(ua)){
-      msg = '📱 Android Chrome:\n1. Toque nos 3 pontinhos (menu)\n2. Toque em "Adicionar à tela inicial"\n3. Toque em "Adicionar"';
-    } else {
-      msg = '💻 Desktop Chrome/Edge:\n1. Clique no ícone ⊕ na barra de endereços (ao lado da URL)\n2. Clique em "Instalar"\n\nOu: Menu ⋮ → "Instalar Smart Automation CRM"\n\nSe não aparecer, acesse pelo Chrome (não Firefox/Safari no desktop).';
-    }
-    alert(msg);
+    return;
   }
+  // Mostra modal de instrução visual em vez de alert()
+  _mostrarModalInstalar();
+}
+
+function _mostrarModalInstalar(){
+  const existing = document.getElementById('modal-instalar');
+  if(existing){ existing.style.display='flex'; return; }
+
+  const ua = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isAndroid = /android/.test(ua);
+
+  let instrucoes = '';
+  if(isIOS){
+    instrucoes = `
+      <div style="margin-bottom:12px;padding:12px;background:rgba(30,111,255,.1);border-radius:8px">
+        <b style="color:var(--blue3)">📱 iPhone / iPad (Safari):</b><br><br>
+        1. Certifique-se de estar no <b>Safari</b> (não Chrome)<br>
+        2. Toque no botão <b>□↑ Compartilhar</b> na barra inferior<br>
+        3. Role para baixo e toque em <b>"Adicionar à Tela de Início"</b><br>
+        4. Toque em <b>"Adicionar"</b>
+      </div>`;
+  } else if(isAndroid){
+    instrucoes = `
+      <div style="margin-bottom:12px;padding:12px;background:rgba(30,111,255,.1);border-radius:8px">
+        <b style="color:var(--blue3)">📱 Android (Chrome):</b><br><br>
+        1. Toque nos <b>3 pontinhos ⋮</b> no canto superior direito<br>
+        2. Toque em <b>"Adicionar à tela inicial"</b> ou <b>"Instalar app"</b><br>
+        3. Toque em <b>"Adicionar"</b>
+      </div>`;
+  } else {
+    instrucoes = `
+      <div style="margin-bottom:10px;padding:12px;background:rgba(30,111,255,.1);border-radius:8px">
+        <b style="color:var(--blue3)">💻 Chrome / Edge (Desktop):</b><br><br>
+        1. Olhe na <b>barra de endereços</b> (onde fica a URL)<br>
+        2. Procure o ícone <b>⊕</b> ou <b>🖥️</b> no lado direito da barra<br>
+        3. Clique nele e depois em <b>"Instalar"</b><br><br>
+        <span style="color:var(--muted)">Se não aparecer o ícone:</span><br>
+        Menu <b>⋮</b> → <b>"Salvar e compartilhar"</b> → <b>"Instalar Smart Automation CRM"</b>
+      </div>
+      <div style="padding:10px;background:rgba(245,158,11,.1);border-radius:8px;font-size:11px;color:var(--muted)">
+        ⚠️ <b>O Chrome exige:</b> visitar o site pelo menos 2x com intervalo de 5 minutos antes de mostrar o botão automaticamente. A instalação manual pelo menu sempre funciona.
+      </div>`;
+  }
+
+  const modal = document.createElement('div');
+  modal.id = 'modal-instalar';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(6,10,20,.88);z-index:9000;display:flex;align-items:center;justify-content:center';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--line2);border-radius:14px;
+                width:440px;max-width:95vw;padding:24px;font-family:Inter,Arial,sans-serif">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700;color:var(--white)">📲 Instalar o CRM como App</div>
+        <button onclick="document.getElementById('modal-instalar').style.display='none'"
+          style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+      </div>
+      ${instrucoes}
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button onclick="window.open(location.href,'_blank')"
+          style="flex:1;padding:10px;background:var(--grd,linear-gradient(135deg,#1E6FFF,#2D84FF));
+                 color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:Inter,Arial,sans-serif">
+          Abrir em nova aba
+        </button>
+        <button onclick="document.getElementById('modal-instalar').style.display='none'"
+          style="padding:10px 16px;background:transparent;border:1px solid var(--line);
+                 color:var(--muted);border-radius:8px;cursor:pointer;font-size:13px;font-family:Inter,Arial,sans-serif">
+          Fechar
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
 }
 
 // -- BACKEND SYNC --------------------------------------------------------------
@@ -3014,7 +3290,10 @@ const SmartOfflineDB = (() => {
 
       request.onsuccess = (event) => {
         db = event.target.result;
-        console.log('[OfflineDB] Banco aberto com sucesso.');
+        if (!window._dbJaLogado) {
+          console.log('[OfflineDB] Banco aberto com sucesso.');
+          window._dbJaLogado = true;
+        }
         resolve(db);
       };
 
@@ -3273,7 +3552,7 @@ const SmartOfflineDB = (() => {
   // SINCRONIZADOR - envia fila para Apps Script / Protheus
   // ═══════════════════════════════════════════════════════════════════════════
   const Sincronizador = {
-    APPS_SCRIPT_URL: window.__CRM_CONFIG__?.appsScriptUrl || '',
+    APPS_SCRIPT_URL: window.__CRM_CONFIG__?.appsScriptUrl || window.__APPS_URL__ || '',
     PROTHEUS_URL:    window.__CRM_CONFIG__?.protheusUrl    || '',
     sincronizando:   false,
 
@@ -3335,6 +3614,10 @@ const SmartOfflineDB = (() => {
     async _enviarItem(item) {
       const rota = this._getRota(item.tipo);
 
+      if (!rota.url || rota.url.includes('SUA_URL') || rota.url.length < 20) {
+        throw new Error('URL do backend não configurada');
+      }
+
       const response = await fetch(rota.url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -3353,12 +3636,20 @@ const SmartOfflineDB = (() => {
       return response.json();
     },
 
+    _getUrl() {
+      // Resolve URL em runtime — garante que pega do __CRM_CONFIG__ já definido
+      return this.APPS_SCRIPT_URL
+        || window.__CRM_CONFIG__?.appsScriptUrl
+        || '';
+    },
+
     _getRota(tipo) {
+      const url = this._getUrl();
       const rotas = {
-        'novo_lead':      { url: this.APPS_SCRIPT_URL, acao: 'inserirLead' },
-        'atualizar_lead': { url: this.APPS_SCRIPT_URL, acao: 'atualizarLead' },
-        'novo_pedido':    { url: this.APPS_SCRIPT_URL, acao: 'inserirPedido' },
-        'proposta':       { url: this.APPS_SCRIPT_URL, acao: 'salvarProposta' },
+        'novo_lead':      { url, acao: 'inserirLead' },
+        'atualizar_lead': { url, acao: 'atualizarLead' },
+        'novo_pedido':    { url, acao: 'inserirPedido' },
+        'proposta':       { url, acao: 'salvarProposta' },
         // Rotas Protheus
         'pedido_protheus': { url: `${this.PROTHEUS_URL}/api/pedidos`, acao: 'POST' },
       };
@@ -3374,6 +3665,12 @@ const SmartOfflineDB = (() => {
         return false;
       }
 
+      // Verifica se URL está configurada
+      if (!this.APPS_SCRIPT_URL || this.APPS_SCRIPT_URL.length < 20 || this.APPS_SCRIPT_URL.includes('SUA_URL')) {
+        console.log('[Sync] URL do Apps Script não configurada - usando dados locais');
+        return false;
+      }
+
       try {
         const params = new URLSearchParams({
           acao: 'carregarDados',
@@ -3381,7 +3678,13 @@ const SmartOfflineDB = (() => {
           vendedor: vendedorNome || ''
         });
 
-        const response = await fetch(`${this.APPS_SCRIPT_URL}?${params}`, {
+        // Busca URL dinamicamente (pode ter sido definida após init do objeto)
+      const _url = this.APPS_SCRIPT_URL || window.__CRM_CONFIG__?.appsScriptUrl || '';
+      if (!_url || _url.length < 20 || _url.includes('SUA_URL')) {
+        console.log('[Sync] URL não configurada - pulando fetch');
+        return false;
+      }
+      const response = await fetch(`${_url}?${params}`, {
         });
 
         if (!response.ok) throw new Error('Servidor indisponível');
@@ -5026,30 +5329,8 @@ window.__CRM_CONFIG__ = {
 // 1. REGISTRO DO SERVICE WORKER (PWA)
 // ═══════════════════════════════════════════════════════════════════════════════
 async function registrarServiceWorker() {
-  if (!('serviceWorker' in navigator)) {
-    console.warn('[PWA] Service Worker não suportado neste navegador.');
-    return;
-  }
-
-  try {
-    const reg = await navigator.serviceWorker.register('/sw-disabled.js', { scope: '/' });
-    console.log('[PWA] Service Worker registrado. Escopo:', reg.scope);
-
-    // Detecta atualização disponível
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      newWorker?.addEventListener('statechange', () => {
-        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // Nova versão disponível - notifica o usuário
-          _mostrarBannerAtualizacao(newWorker);
-        }
-      });
-    });
-
-    return reg;
-  } catch (error) {
-    console.error('[PWA] Falha ao registrar Service Worker:', error.message);
-  }
+  // SW externo desabilitado — SW inline via Blob já registrado no <head>
+  // SW via Blob já registrado no head
 }
 
 function _mostrarBannerAtualizacao(newWorker) {
@@ -5238,7 +5519,7 @@ async function inicializarCRM() {
     setTimeout(() => _dispararNotifDemo(), 5000);
   }
 
-  console.log('[CRM] Inicialização concluída.', { perfil, vendedorNome, online: navigator.onLine });
+  console.log('[CRM] Inicialização concluída. Perfil:', perfil, '| Online:', navigator.onLine);
 }
 
 function _dispararNotifDemo() {
