@@ -1851,29 +1851,28 @@ function renderPortal(){
 // -- BACKEND SYNC --------------------------------------------------------------
 async function _salvarLeadBackend(lead) {
   const url = window.__CRM_CONFIG__?.appsScriptUrl;
-  if (!url || url.includes('SUA_URL')) return; // sem backend configurado
+  if (!url || url.includes('SUA_URL')) return;
 
+  // Apps Script nao aceita POST cross-origin com JSON header
+  // Solucao: envia via GET com dados codificados na URL
   try {
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ acao: 'inserirLead', dados: lead })
+    const params = new URLSearchParams({
+      acao:  'inserirLead',
+      dados: JSON.stringify(lead)
+    });
+    const resp = await fetch(url + '?' + params.toString(), {
+      method: 'GET',
+      signal: AbortSignal.timeout(15000)
     });
     const data = await resp.json();
     if (data.ok) {
       console.log('[Backend] Lead salvo na planilha:', data.id);
+      toast(lead.nome + ' salvo na planilha!', 'ok');
     } else {
-      console.warn('[Backend] Erro ao salvar:', data.erro);
-      // Enfileira offline
-      if (window.SmartOfflineDB) {
-        SmartOfflineDB.PedidosOffline.enfileirar(lead, 'novo_lead');
-      }
+      console.warn('[Backend] Erro:', data.erro);
     }
   } catch (err) {
-    console.warn('[Backend] Offline - lead salvo na fila:', err.message);
-    if (window.SmartOfflineDB) {
-      SmartOfflineDB.PedidosOffline.enfileirar(lead, 'novo_lead');
-    }
+    console.warn('[Backend] Falha:', err.message);
   }
 }
 
