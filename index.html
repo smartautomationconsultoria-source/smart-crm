@@ -22,26 +22,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{
-  --bg:    #060A14;
-  --bg2:   #080E1C;
-  --bg3:   #0B1225;
-  --bg4:   #0F172E;
-  --bg5:   #141E38;
-  --blue:  #1E6FFF;
-  --blue2: #2D84FF;
-  --blue3: #4A9AFF;
-  --blue4: rgba(30,111,255,0.12);
-  --blue5: rgba(30,111,255,0.06);
-  --line:  rgba(30,111,255,0.15);
-  --line2: rgba(30,111,255,0.28);
-  --white: #E8EEFF;
-  --muted: #5A6E99;
-  --dim:   #3A4E72;
-  --green: #10B981;
-  --red:   #EF4444;
-  --amber: #F59E0B;
-  --grd:   linear-gradient(135deg,#1E6FFF,#0A3BAA);
-  --grd2:  linear-gradient(135deg,#2D84FF,#1E6FFF);
+  --bg:    #F5F7FA;
+  --bg2:   #FFFFFF;
+  --bg3:   #EEF2F7;
+  --bg4:   #E4ECF5;
+  --bg5:   #D8E4EF;
+  --blue:  #003F7F;
+  --blue2: #0056B3;
+  --blue3: #0078D4;
+  --blue4: rgba(0,63,127,0.08);
+  --blue5: rgba(0,63,127,0.04);
+  --line:  rgba(0,63,127,0.12);
+  --line2: rgba(0,63,127,0.20);
+  --white: #0F172A;
+  --muted: #64748B;
+  --dim:   #94A3B8;
+  --green: #059669;
+  --red:   #DC2626;
+  --amber: #D97706;
+  --grd:   linear-gradient(135deg,#003F7F,#0056B3);
+  --grd2:  linear-gradient(135deg,#0056B3,#003F7F);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);overflow:hidden;}
@@ -74,7 +74,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .topbar{height:54px;flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:12px;}
 .pt{font-size:14px;font-weight:700;}
-.ps{font-size:11px;color:var(--muted);}
+.ps{font-size:11px;color:#64748B;}
 .tr{margin-left:auto;display:flex;align-items:center;gap:8px;}
 .sb{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--line);border-radius:7px;padding:6px 11px;}
 .sb input{background:transparent;border:none;outline:none;color:var(--white);font-family:'Inter',sans-serif;font-size:12px;width:160px;}
@@ -319,6 +319,112 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px;}
+
+/* ── TEMA CLARO CORPORATIVO — ARGEPASI ─────── */
+.sidebar, nav.sidebar, .content > .sb-wrapper, 
+div[class*="sidebar"] { background: #003F7F !important; }
+
+/* Sidebar container */
+.cw > div:first-child { background: #003F7F; }
+
+/* Cards com sombra sutil */
+.card { box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,63,127,0.05); }
+.kpi  { box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 2px 8px rgba(0,63,127,0.05); }
+
+/* Tabela mais limpa */
+.tbl thead th { background: #F1F5F9; color: #475569; border-bottom: 2px solid #E2E8F0; }
+.tbl tbody tr:hover { background: #F8FAFC; }
+.tbl tbody td { border-bottom: 1px solid #F1F5F9; color: #334155; }
+
+/* Inputs */
+input, select, textarea { 
+  background: #FFFFFF !important; 
+  border: 1px solid #CBD5E1 !important; 
+  color: #0F172A !important; 
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #003F7F !important;
+  box-shadow: 0 0 0 3px rgba(0,63,127,0.1) !important;
+}
+input::placeholder { color: #94A3B8; }
+
+/* Modal */
+.modal { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+.mh { background: #003F7F; }
+.mt { color: #FFFFFF !important; }
+.mc { color: rgba(255,255,255,0.8) !important; }
+
+/* Badges mais suaves */
+.b-novo { background: rgba(0,120,212,0.1); color: #0056B3; }
+.b-cont { background: rgba(217,119,6,0.1);  color: #92400E; }
+.b-prop { background: rgba(0,63,127,0.12);  color: #003F7F; }
+.b-nego { background: rgba(217,119,6,0.12); color: #B45309; }
+.b-fech { background: rgba(5,150,105,0.1);  color: #065F46; }
+.b-perd { background: rgba(220,38,38,0.1);  color: #991B1B; }
+.b-pj   { background: rgba(0,63,127,0.1);   color: #003F7F; }
+.b-clt  { background: rgba(5,150,105,0.1);  color: #065F46; }
+.b-alto { background: rgba(220,38,38,0.1);  color: #991B1B; }
+.b-med  { background: rgba(217,119,6,0.1);  color: #92400E; }
+.b-baix { background: rgba(5,150,105,0.1);  color: #065F46; }
+
+/* Topbar */
+.topbar { box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-bottom: 1px solid #E2E8F0 !important; }
+
+/* Botões */
+.btn-g { background: #F1F5F9; color: #334155; border: 1px solid #CBD5E1; }
+.btn-g:hover { background: #E2E8F0; }
+.btn-r { background: #DC2626; }
+
+/* Overlay dos modais */
+.ov { background: rgba(15,23,42,0.6); }
+
+/* Nav itens na sidebar */
+.ni { color: rgba(255,255,255,0.75); }
+.ni:hover { background: rgba(255,255,255,0.12); color: #FFFFFF; }
+.ni.act { background: rgba(255,255,255,0.18); color: #FFFFFF; border-left: 3px solid #FFFFFF; }
+.nav-sec { color: rgba(255,255,255,0.45); }
+.nav-sep { background: rgba(255,255,255,0.12); }
+.lb-text, .logo-text { color: #FFFFFF !important; }
+.ls { color: rgba(255,255,255,0.6) !important; }
+.lt { color: #FFFFFF !important; }
+.av-name { color: #FFFFFF !important; }
+.av-role { color: rgba(255,255,255,0.65) !important; }
+.sb-foot .btn { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); }
+.sb-foot .btn:hover { background: rgba(255,255,255,0.1); color: #FFFFFF; }
+
+/* Títulos de seção */
+.pt { color: #0F172A; }
+.ps { color: #64748B; }
+.ct { color: #0F172A; }
+.cs { color: #64748B; }
+
+/* Formulários dentro de cards */
+.fr label { color: #475569; font-weight: 500; }
+.fg label { color: #475569; }
+
+/* Activity feed */
+.act-it { border-bottom: 1px solid #F1F5F9; }
+.act-it:hover { background: #F8FAFC; }
+
+/* Kanban cards */
+.kcol { background: #F1F5F9; border: 1px solid #E2E8F0; }
+.kcard { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); color: #0F172A; }
+
+/* Chat / Copilot */
+.cfab { background: linear-gradient(135deg,#003F7F,#0056B3) !important; }
+.chdr { background: linear-gradient(135deg,#003F7F,#0056B3) !important; }
+.cmsgs { background: #F8FAFC; }
+.cmsg-bot div { background: #FFFFFF !important; border: 1px solid #E2E8F0; color: #0F172A !important; }
+
+/* Gráficos — fundo branco */
+.cw { background: #FFFFFF; border-radius: 8px; }
+
+/* Quick buttons do chat */
+.qb { background: rgba(0,63,127,0.08) !important; border: 1px solid rgba(0,63,127,0.15) !important; color: #003F7F !important; }
+
+/* Search bar */
+.search-bar, .sb-search { background: #FFFFFF; border: 1px solid #CBD5E1; color: #0F172A; }
+
 </style>
 
 <script>
@@ -416,7 +522,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   </div>
   <nav class="nav">
     <div class="nav-sec">Principal</div>
-    <div class="ni active" onclick="go('dash',this)"><span class="ico">📊</span><span class="lbl">Dashboard</span></div>
+    <div class="ni active" onclick="go('dash',this)"><span class="ico">📊</span><span class="lbl">Painel Geral</span></div>
     <div class="ni" onclick="go('leads',this)"><span class="ico">🎯</span><span class="lbl">Leads</span><span class="nb blue" id="nb-leads">47</span></div>
     <div class="ni" onclick="go('funil',this)"><span class="ico">🔀</span><span class="lbl">Funil de Vendas</span></div>
     <div class="ni" onclick="go('vendedores',this)"><span class="ico">👥</span><span class="lbl">Vendedores</span></div>
@@ -424,7 +530,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
     <div class="nav-sec">Análise</div>
     <div class="ni" onclick="go('perdas',this)"><span class="ico">📉</span><span class="lbl">Análise de Perdas</span><span class="nb">12</span></div>
     <div class="ni" onclick="go('carteira',this)"><span class="ico">🛡️</span><span class="lbl">Proteção Carteira</span><span class="nb">7</span></div>
-    <div class="ni" onclick="go('relatorios',this)"><span class="ico">📈</span><span class="lbl">Relatórios</span></div>
+
     <div class="nav-sep"></div>
     <div class="nav-sec">Comercial</div>
     <div class="ni" onclick="go('propostas',this)"><span class="ico">📄</span><span class="lbl">Propostas</span><span class="nb blue" id="nb-prop">6</span></div>
@@ -433,7 +539,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
     <div class="nav-sep"></div>
     <div class="nav-sec">Gestão</div>
     <div class="ni" onclick="go('metas',this)"><span class="ico">🎯</span><span class="lbl">Metas</span></div>
-    <div class="ni" onclick="go('forecast',this)"><span class="ico">📊</span><span class="lbl">Forecast</span></div>
+
     <div class="ni" onclick="go('portal',this)"><span class="ico">🌐</span><span class="lbl">Portal Cliente</span></div>
     <div class="nav-sep"></div>
     <div class="nav-sec">Configuração</div>
@@ -501,6 +607,21 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
       <div class="g2">
         <div class="card"><div class="ct">Performance por vendedor</div><div class="cs">Fechamentos e perdas · PJ e CLT</div><div class="cw"><canvas id="c-vend"></canvas></div></div>
         <div class="card"><div class="ct">Atividade recente</div><div class="cs">Últimas interações do time</div><div style="display:flex;flex-direction:column;gap:8px" id="atividade"></div></div>
+      </div>
+      <!-- Botões de exportação no Dashboard -->
+      <div class="card" style="margin-top:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div>
+            <div class="ct">Exportar dados</div>
+            <div class="cs">Extraia relatórios em diferentes formatos</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-g" onclick="exportarLeadsPDF()">⬇ PDF — Relatório de Leads</button>
+            <button class="btn btn-g" onclick="exportCSV()">⬇ Excel / CSV</button>
+            <button class="btn btn-g" onclick="exportarRelatoriosPDF()">⬇ PDF — Relatório Executivo</button>
+            <button class="btn btn-g" onclick="toast('Abrindo Looker Studio...','info')">📊 Looker Studio</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -683,7 +804,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
     <div class="panel" id="p-produtos">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <div><div class="pt">Catálogo de Produtos & Tabela de Preços</div><div class="ps">Clique em qualquer produto para editar · preços usados na geração de propostas</div></div>
-        <button class="btn btn-p" onclick="toast('Novo produto cadastrado!','ok')">+ Novo Produto</button>
+        <button class="btn btn-p" onclick="abrirModalNovoProduto()">+ Novo Produto</button>
       </div>
       <div class="prod-grid" id="prod-grid"></div>
       <div class="card">
@@ -702,7 +823,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
         <div style="display:flex;gap:7px">
           <button class="btn btn-g" onclick="toast('Mês: Julho 2026','info')">◀ Mês anterior</button>
           <button class="btn btn-g" onclick="toast('Mês atual','info')">▶ Próximo mês</button>
-          <button class="btn btn-p" onclick="toast('Metas do time atualizadas!','ok')">✏️ Editar metas</button>
+          <button class="btn btn-p" onclick="abrirModalEditarMetas()">✏️ Editar metas</button>
         </div>
       </div>
       <div id="metas-list"></div>
@@ -844,6 +965,91 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   </div>
 </div>
 
+
+
+
+<!-- MODAL EDITAR METAS -->
+<div class="ov" id="ov-metas">
+  <div class="modal" style="width:600px">
+    <div class="mh">
+      <div class="mt">🎯 Editar Metas do Time</div>
+      <button class="mc" onclick="closeModal('ov-metas')">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+      Defina a meta de receita, leads e contratos de cada vendedor para o mês atual.
+    </div>
+    <div id="metas-form-list"></div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('ov-metas')">Cancelar</button>
+      <button class="btn btn-p" onclick="salvarMetas()">💾 Salvar metas</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO PRODUTO -->
+<div class="ov" id="ov-produto">
+  <div class="modal" style="width:560px">
+    <div class="mh">
+      <div class="mt" id="produto-modal-titulo">📦 Novo Produto</div>
+      <button class="mc" onclick="closeModal('ov-produto')">✕</button>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Nome do produto *</label><input id="pp-nome" placeholder="Ex: Linha Premium — Cães"></div>
+      <div class="fg"><label>Categoria</label>
+        <select id="pp-cat">
+          <option>Cães</option><option>Gatos</option><option>Mix</option><option>Filhotes</option><option>Outro</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Tag / Linha</label><input id="pp-tag" placeholder="Ex: Premium, Economy, All Life"></div>
+      <div class="fg"><label>Unidade</label>
+        <select id="pp-unidade">
+          <option>Tonelada</option><option>Kg</option><option>Saca</option><option>Unidade</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Preço tabela (R$) *</label><input id="pp-preco" type="number" min="0" step="0.01" placeholder="Ex: 4500.00" oninput="calcMargemProduto()"></div>
+      <div class="fg"><label>Custo (R$)</label><input id="pp-custo" type="number" min="0" step="0.01" placeholder="Ex: 2800.00" oninput="calcMargemProduto()"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Desconto máx. Vendedor (%)</label><input id="pp-desc-v" type="number" min="0" max="100" placeholder="Ex: 5"></div>
+      <div class="fg"><label>Desconto máx. Gerente (%)</label><input id="pp-desc-g" type="number" min="0" max="100" placeholder="Ex: 12"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Estoque disponível</label><input id="pp-estoque" placeholder="Ex: 142 ton"></div>
+      <div class="fg"><label>Pedido mínimo</label><input id="pp-minped" placeholder="Ex: 2 ton"></div>
+    </div>
+    <div style="background:var(--bg3);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;color:var(--muted)">Margem calculada:</span>
+      <span style="font-size:16px;font-weight:800;color:var(--amber)" id="pp-margem">—</span>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('ov-produto')">Cancelar</button>
+      <button class="btn btn-p" onclick="salvarNovoProduto()">📦 Salvar produto</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL EDITAR METAS -->
+<div class="ov" id="ov-metas">
+  <div class="modal" style="width:620px">
+    <div class="mh">
+      <div class="mt">🎯 Editar Metas do Time</div>
+      <button class="mc" onclick="closeModal('ov-metas')">✕</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+      Defina a meta de receita mensal de cada vendedor. As barras de progresso atualizam automaticamente.
+    </div>
+    <div id="metas-form-list" style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto"></div>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeModal('ov-metas')">Cancelar</button>
+      <button class="btn btn-p" onclick="salvarMetas()">💾 Salvar metas</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL CONFIRMAR EXCLUSÃO -->
 <div class="ov" id="ov-excluir">
@@ -2858,7 +3064,7 @@ function renderContratos(){
 // -- PRODUTOS ------------------------------------------
 function renderProdutos(){
   document.getElementById('prod-grid').innerHTML = produtos.map(p=>`
-    <div class="prod-card" onclick="toast('Editando: '+'${p.nome}'+'','info')">
+    <div class="prod-card" onclick="abrirModalNovoProduto('${p.nome}')" title="Clique para editar" ">
       <span class="prod-tag" style="background:${p.cor}22;color:${p.cor}">${p.tag}</span>
       <div style="font-size:13px;font-weight:700;margin-bottom:4px">${p.nome}</div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${p.cat}</div>
