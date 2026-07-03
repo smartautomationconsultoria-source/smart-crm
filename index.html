@@ -797,6 +797,9 @@ input::placeholder { color: #94A3B8; }
         <div class="kpi"><div class="kl">Churn trimestral</div><div class="kv" style="color:var(--green)">0%</div><div class="kd up">Nenhum cancelamento</div></div>
         <div class="kpi"><div class="kl">Ticket médio</div><div class="kv" style="color:var(--blue2)">R$14.1k</div><div class="kd up">▲ 8% vs mai</div></div>
       </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button class="btn btn-p" onclick="abrirNovoContrato()">+ Novo Contrato</button>
+      </div>
       <div id="contratos-list"></div>
     </div>
 
@@ -982,6 +985,50 @@ input::placeholder { color: #94A3B8; }
     <div class="mf">
       <button class="btn btn-g" onclick="closeModal('ov-metas')">Cancelar</button>
       <button class="btn btn-p" onclick="salvarMetas()">💾 Salvar metas</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL NOVO CONTRATO -->
+<div class="ov" id="ov-contrato">
+  <div class="modal" style="width:560px">
+    <div class="mh">
+      <div class="mt" id="contrato-modal-titulo">📋 Novo Contrato</div>
+      <button class="mc" onclick="closeModal('ov-contrato')">✕</button>
+    </div>
+    <div class="fr">
+      <div class="fg" style="flex:2"><label>Cliente / Empresa *</label><input id="fc-cliente" placeholder="Ex: Frigorífico Bela Vista"></div>
+      <div class="fg"><label>Valor mensal (R$) *</label><input id="fc-val" type="number" min="0" placeholder="Ex: 32000"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Produto / Linha</label>
+        <select id="fc-prod">
+          <option>Linha Premium — Cães</option>
+          <option>Linha Economy — Cães</option>
+          <option>Linha Premium — Gatos</option>
+          <option>Mix Completo B2B</option>
+          <option>Linha Filhotes Premium</option>
+        </select>
+      </div>
+      <div class="fg"><label>Vendedor responsável</label>
+        <select id="fc-vend">
+          <option>Carlos Silva</option>
+          <option>Ana Ferreira</option>
+          <option>Juliana Mendes</option>
+          <option>Roberto Costa</option>
+          <option>Marcos Pereira</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Início da vigência</label><input id="fc-ini" type="date"></div>
+      <div class="fg"><label>Fim da vigência</label><input id="fc-fim" type="date"></div>
+    </div>
+    <div class="fg"><label>Observações</label><textarea id="fc-obs" rows="2" placeholder="Ex: Renovação automática, desconto de fidelidade, etc."></textarea></div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('ov-contrato')">Cancelar</button>
+      <button class="btn btn-p" onclick="salvarNovoContrato()">✅ Criar contrato</button>
     </div>
   </div>
 </div>
@@ -1844,6 +1891,320 @@ function excluirProposta(id){
   renderPropostas();
   document.getElementById('nb-prop').textContent = propostas.length;
   toast('Proposta ' + id + ' excluída.', 'ok');
+}
+
+
+
+// -- EDITAR METAS ─────────────────────────────────────────────────────────
+function abrirModalEditarMetas(){
+  const lista = document.getElementById('metas-form-list');
+  if(!lista){ toast('Erro ao abrir modal de metas','err'); return; }
+
+  lista.innerHTML = metas_data.map((m, i) => `
+    <div style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid var(--line)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:34px;height:34px;border-radius:50%;background:var(--grd);
+                    display:flex;align-items:center;justify-content:center;
+                    font-weight:800;color:#fff;font-size:12px;flex-shrink:0">${m.ini}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--white)">${m.nome}</div>
+          <span class="badge ${m.tipo==='PJ'?'b-pj':'b-clt'}">${m.tipo}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div>
+          <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px;
+                        text-transform:uppercase;letter-spacing:.5px">Meta Receita (R$)</label>
+          <input type="number" id="meta-receita-${i}" value="${m.meta}"
+            style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--line);
+                   border-radius:7px;padding:8px 10px;color:var(--white);font-size:13px;
+                   font-weight:600;font-family:'Inter',sans-serif">
+        </div>
+        <div>
+          <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px;
+                        text-transform:uppercase;letter-spacing:.5px">Meta Leads</label>
+          <input type="number" id="meta-leads-${i}" value="${m.leads_meta}"
+            style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--line);
+                   border-radius:7px;padding:8px 10px;color:var(--white);font-size:13px;
+                   font-weight:600;font-family:'Inter',sans-serif">
+        </div>
+        <div>
+          <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:4px;
+                        text-transform:uppercase;letter-spacing:.5px">Meta Contratos</label>
+          <input type="number" id="meta-contratos-${i}" value="${m.contratos_meta}"
+            style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--line);
+                   border-radius:7px;padding:8px 10px;color:var(--white);font-size:13px;
+                   font-weight:600;font-family:'Inter',sans-serif">
+        </div>
+      </div>
+    </div>`).join('');
+
+  openModal('ov-metas');
+}
+
+function salvarMetas(){
+  metas_data.forEach((m, i) => {
+    const r = parseFloat(document.getElementById('meta-receita-'+i)?.value);
+    const l = parseInt(document.getElementById('meta-leads-'+i)?.value);
+    const c = parseInt(document.getElementById('meta-contratos-'+i)?.value);
+    if(!isNaN(r)) m.meta           = r;
+    if(!isNaN(l)) m.leads_meta     = l;
+    if(!isNaN(c)) m.contratos_meta = c;
+  });
+  closeModal('ov-metas');
+  if(typeof renderMetas === 'function') renderMetas();
+  toast('Metas atualizadas!', 'ok');
+}
+
+// -- PRODUTOS CRUD ─────────────────────────────────────────────────────────
+function abrirModalNovoProduto(idOuNome){
+  const editando = idOuNome !== undefined;
+  document.getElementById('produto-modal-titulo').textContent = editando ? '✏️ Editar Produto' : '📦 Novo Produto';
+
+  if(editando){
+    const p = produtos.find(x=>x.id===idOuNome || x.nome===idOuNome);
+    if(p){
+      document.getElementById('pp-nome').value    = p.nome    || '';
+      document.getElementById('pp-tag').value     = p.tag     || '';
+      document.getElementById('pp-estoque').value = p.estoque || '';
+      document.getElementById('pp-minped').value  = p.minPed  || '';
+      const precoNum = parseFloat(String(p.preco).replace(/[^\d,]/g,'').replace(',','.')) || 0;
+      if(precoNum) document.getElementById('pp-preco').value = precoNum;
+      if(p.desc_v) document.getElementById('pp-desc-v').value = p.desc_v;
+      if(p.desc_g) document.getElementById('pp-desc-g').value = p.desc_g;
+    }
+    const btnSv = document.querySelector('#ov-produto .btn-p');
+    if(btnSv){ btnSv.textContent='💾 Salvar alterações'; btnSv.onclick=()=>salvarEdicaoProduto(idOuNome); }
+  } else {
+    ['pp-nome','pp-tag','pp-estoque','pp-minped','pp-preco','pp-custo','pp-desc-v','pp-desc-g']
+      .forEach(fid=>{ const el=document.getElementById(fid); if(el) el.value=''; });
+    const pm = document.getElementById('pp-margem');
+    if(pm){ pm.textContent='—'; pm.style.color='var(--amber)'; }
+    const btnSv = document.querySelector('#ov-produto .btn-p');
+    if(btnSv){ btnSv.textContent='📦 Salvar produto'; btnSv.onclick=salvarNovoProduto; }
+  }
+  openModal('ov-produto');
+  setTimeout(()=>document.getElementById('pp-nome').focus(), 200);
+}
+
+function calcMargemProduto(){
+  const preco = parseFloat(document.getElementById('pp-preco')?.value)||0;
+  const custo = parseFloat(document.getElementById('pp-custo')?.value)||0;
+  const el = document.getElementById('pp-margem');
+  if(!el) return;
+  if(preco>0 && custo>0){
+    const m = ((preco-custo)/preco*100).toFixed(1);
+    el.textContent = m+'%';
+    el.style.color = m>=30?'var(--green)':m>=15?'var(--amber)':'var(--red)';
+  } else { el.textContent='—'; el.style.color='var(--amber)'; }
+}
+
+function salvarNovoProduto(){
+  const nome = document.getElementById('pp-nome').value.trim();
+  if(!nome){ toast('Informe o nome do produto','err'); return; }
+  const preco = parseFloat(document.getElementById('pp-preco').value)||0;
+  if(!preco){ toast('Informe o preço do produto','err'); return; }
+  const custo = parseFloat(document.getElementById('pp-custo').value)||0;
+  const margem = custo>0 ? ((preco-custo)/preco*100).toFixed(1)+'%' : '—';
+  const unidade = document.getElementById('pp-unidade')?.value||'Tonelada';
+  const un = unidade==='Tonelada'?'ton':unidade.toLowerCase();
+  const novo = {
+    id:      'prod-'+Date.now(),
+    nome,
+    cat:     document.getElementById('pp-cat').value,
+    tag:     document.getElementById('pp-tag').value||document.getElementById('pp-cat').value,
+    cor:     '#003F7F',
+    preco:   'R$'+preco.toLocaleString('pt-BR',{minimumFractionDigits:2})+'/'+un,
+    precoN:  preco,
+    minPed:  document.getElementById('pp-minped').value||'1 '+un,
+    desc_v:  parseInt(document.getElementById('pp-desc-v').value)||0,
+    desc_g:  parseInt(document.getElementById('pp-desc-g').value)||0,
+    estoque: document.getElementById('pp-estoque').value||'Sob consulta',
+    margem,
+  };
+  produtos.push(novo);
+  renderProdutos();
+  closeModal('ov-produto');
+  toast('Produto "'+nome+'" cadastrado!','ok');
+}
+
+function salvarEdicaoProduto(idOrig){
+  const idx = produtos.findIndex(x=>x.id===idOrig||x.nome===idOrig);
+  if(idx<0){ toast('Produto não encontrado','err'); return; }
+  const nome  = document.getElementById('pp-nome').value.trim();
+  const preco = parseFloat(document.getElementById('pp-preco').value)||0;
+  const custo = parseFloat(document.getElementById('pp-custo').value)||0;
+  const margem = custo>0?((preco-custo)/preco*100).toFixed(1)+'%':produtos[idx].margem;
+  const un = (document.getElementById('pp-unidade')?.value||'Tonelada')==='Tonelada'?'ton':'un';
+  produtos[idx].nome    = nome;
+  produtos[idx].cat     = document.getElementById('pp-cat').value;
+  produtos[idx].tag     = document.getElementById('pp-tag').value||produtos[idx].tag;
+  produtos[idx].preco   = 'R$'+preco.toLocaleString('pt-BR',{minimumFractionDigits:2})+'/'+un;
+  produtos[idx].precoN  = preco;
+  produtos[idx].desc_v  = parseInt(document.getElementById('pp-desc-v').value)||0;
+  produtos[idx].desc_g  = parseInt(document.getElementById('pp-desc-g').value)||0;
+  produtos[idx].estoque = document.getElementById('pp-estoque').value||produtos[idx].estoque;
+  produtos[idx].minPed  = document.getElementById('pp-minped').value||produtos[idx].minPed;
+  produtos[idx].margem  = margem;
+  renderProdutos();
+  closeModal('ov-produto');
+  toast('Produto atualizado!','ok');
+}
+
+// -- CONTRATOS CRUD ─────────────────────────────────────────────────────────
+// contratos já declarados acima
+
+function abrirNovoContrato(){
+  // Limpa campos
+  ['fc-cliente','fc-prod','fc-vend','fc-val','fc-ini','fc-fim','fc-obs'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const titulo = document.getElementById('contrato-modal-titulo');
+  if(titulo) titulo.textContent='📋 Novo Contrato';
+  const btnSv = document.querySelector('#ov-contrato .btn-p');
+  if(btnSv){ btnSv.textContent='✅ Criar contrato'; btnSv.onclick=salvarNovoContrato; }
+  openModal('ov-contrato');
+  setTimeout(()=>document.getElementById('fc-cliente').focus(),200);
+}
+
+function salvarNovoContrato(){
+  const cliente = document.getElementById('fc-cliente').value.trim();
+  if(!cliente){ toast('Informe o cliente','err'); return; }
+  const val = parseFloat(document.getElementById('fc-val').value)||0;
+  if(!val){ toast('Informe o valor mensal','err'); return; }
+  const ini = document.getElementById('fc-ini').value;
+  const fim = document.getElementById('fc-fim').value;
+  const diasRestantes = fim ? Math.floor((new Date(fim)-new Date())/(1000*60*60*24)) : 365;
+
+  const novo = {
+    id: 'C00'+(contratos.length+1),
+    cliente,
+    prod:   document.getElementById('fc-prod').value,
+    vend:   document.getElementById('fc-vend').value.split(' ·')[0],
+    val:    'R$'+val.toLocaleString('pt-BR')+'/mês',
+    valN:   val,
+    ini:    ini ? new Date(ini+'T12:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR'),
+    fim:    fim ? new Date(fim+'T12:00').toLocaleDateString('pt-BR') : '—',
+    status: 'Ativo',
+    dias:   diasRestantes,
+    obs:    document.getElementById('fc-obs').value,
+  };
+  contratos.push(novo);
+  renderContratos();
+  closeModal('ov-contrato');
+  toast('Contrato '+novo.id+' criado com sucesso!','ok');
+}
+
+function verContrato(id){
+  const c = contratos.find(x=>x.id===id);
+  if(!c) return;
+  // Gera PDF do contrato fictício
+  gerarPDFContrato(c);
+}
+
+async function gerarPDFContrato(c){
+  await _garantirJsPDF();
+  if(!window.jspdf){ toast('Erro ao carregar gerador de PDF','err'); return; }
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF();
+  const W = doc.internal.pageSize.getWidth();
+
+  // Cabeçalho
+  doc.setFillColor(0,63,127);
+  doc.rect(0,0,W,30,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(16);
+  doc.text('CONTRATO DE FORNECIMENTO B2B', W/2, 13, {align:'center'});
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.text('Smart Automation CRM · Documento de referência', W/2, 21, {align:'center'});
+
+  // Número
+  doc.setTextColor(0,63,127);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.text('Contrato '+c.id, 14, 42);
+  doc.setTextColor(100,100,100);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.text('Status: '+c.status+' · Emitido em: '+new Date().toLocaleDateString('pt-BR'), 14, 49);
+  doc.setDrawColor(0,63,127);
+  doc.setLineWidth(0.5);
+  doc.line(14,52,W-14,52);
+
+  // Partes
+  doc.setTextColor(0,63,127); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.text('PARTES ENVOLVIDAS', 14, 62);
+  doc.setTextColor(30,30,30); doc.setFont('helvetica','normal'); doc.setFontSize(10);
+
+  if(typeof doc.autoTable==='function'){
+    doc.autoTable({
+      body:[
+        ['CONTRATANTE', c.cliente, 'CNPJ', 'A confirmar'],
+        ['FORNECEDOR', 'Argepasi Alimentos Ind. e Com. Ltda.', 'CNPJ', '05.096.536/0001-76'],
+        ['CONSULTOR', c.vend, 'Empresa', 'Smart Automation'],
+      ],
+      startY:66, theme:'plain',
+      styles:{fontSize:9,cellPadding:4},
+      columnStyles:{0:{fontStyle:'bold',fillColor:[240,244,255],cellWidth:35},2:{fontStyle:'bold',fillColor:[240,244,255],cellWidth:25}},
+      margin:{left:14,right:14}
+    });
+
+    const y1 = doc.lastAutoTable.finalY+10;
+    doc.setTextColor(0,63,127); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text('OBJETO E CONDIÇÕES COMERCIAIS', 14, y1);
+
+    doc.autoTable({
+      body:[
+        ['Produto/Serviço', c.prod],
+        ['Valor mensal', c.val],
+        ['Vigência início', c.ini],
+        ['Vigência fim', c.fim],
+        ['Dias restantes', c.dias+' dias'],
+        ['Observações', c.obs||'—'],
+      ],
+      startY:y1+4, theme:'striped',
+      headStyles:{fillColor:[0,63,127],textColor:255},
+      columnStyles:{0:{fontStyle:'bold',cellWidth:45}},
+      margin:{left:14,right:14}
+    });
+
+    const y2 = doc.lastAutoTable.finalY+14;
+    doc.setTextColor(0,63,127); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text('CLÁUSULAS GERAIS', 14, y2);
+    doc.setTextColor(50,50,50); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+
+    const clausulas = [
+      '1. O presente contrato tem vigência conforme datas estabelecidas acima, podendo ser renovado mediante acordo entre as partes.',
+      '2. O pagamento será realizado mensalmente até o 5° dia útil de cada mês, conforme valor acordado.',
+      '3. Em caso de inadimplência superior a 30 dias, o fornecimento poderá ser suspenso.',
+      '4. Qualquer alteração contratual deverá ser formalizada por escrito e assinada por ambas as partes.',
+      '5. As partes elegem o foro da comarca de Jaborá/SC para dirimir quaisquer controvérsias.',
+    ];
+    let cy = y2+6;
+    clausulas.forEach(cl=>{ doc.text(cl, 14, cy, {maxWidth:W-28}); cy+=10; });
+
+    // Assinaturas
+    const ya = cy+14;
+    doc.line(14,ya,80,ya); doc.line(W-80,ya,W-14,ya);
+    doc.setFontSize(8);
+    doc.text('CONTRATANTE — '+c.cliente, 14, ya+5);
+    doc.text('FORNECEDOR — Argepasi Alimentos', W-80, ya+5);
+    doc.text('Data: ___/___/______', 14, ya+11);
+    doc.text('Data: ___/___/______', W-80, ya+11);
+  }
+
+  // Rodapé
+  const H = doc.internal.pageSize.getHeight();
+  doc.setFillColor(245,247,250);
+  doc.rect(0,H-14,W,14,'F');
+  doc.setTextColor(100,100,100); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+  doc.text('Documento gerado pelo Smart Automation CRM · smarttautomation.com.br', 14, H-5);
+  doc.text('Contrato '+c.id+' · '+new Date().toLocaleString('pt-BR'), W-14, H-5, {align:'right'});
+
+  doc.save('Contrato_'+c.id+'_'+c.cliente.replace(/\s/g,'-')+'.pdf');
+  toast('Contrato '+c.id+' exportado em PDF!','ok');
 }
 
 // -- CARTEIRA --------------------------------------------
@@ -3031,8 +3392,11 @@ function gerarProposta(){
 
 // -- CONTRATOS -----------------------------------------
 function renderContratos(){
-  document.getElementById('contratos-list').innerHTML = contratos.map(c=>{
-    const pct=Math.min(100,Math.round((365-c.vencDias)/365*100));
+  // Usa dados locais se array contratos global estiver vazio
+  const dadosCont = (typeof contratos !== 'undefined' && contratos.length) ? contratos : [];
+  document.getElementById('contratos-list').innerHTML = dadosCont.map(c=>{
+    const vencDias = c.vencDias || c.dias || 365;
+    const pct=Math.min(100,Math.round((365-vencDias)/365*100));
     const corStatus=c.status==='Ativo'?'var(--green)':'var(--amber)';
     const corBarra=c.vencDias<60?'var(--red)':c.vencDias<120?'var(--amber)':'var(--green)';
     return `<div class="contrato-card">
