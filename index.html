@@ -569,8 +569,6 @@ input::placeholder { color: #94A3B8; }
         onmouseout="this.style.background='var(--blue4,rgba(30,111,255,.12))'">
         📲 Instalar App
       </button>
-      <div class="notif-btn">🔔<div class="ndot"></div></div>
-      <button class="btn btn-p" onclick="openModal('ov-lead')">+ Novo Lead</button>
     </div>
   </div>
 
@@ -917,7 +915,40 @@ input::placeholder { color: #94A3B8; }
       <div class="briefing-title">📋 Briefing automático para o novo vendedor</div>
       <div id="tr-briefing"></div>
     </div>
-    <div class="mf"><button class="btn btn-g" onclick="closeModal('ov-transf')">Cancelar</button><button class="btn btn-p" onclick="confirmarTransf()">✓ Transferir com briefing</button></div>
+
+    <!-- Mensagem para o cliente -->
+    <div style="margin-top:14px;background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.2);border-radius:10px;padding:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:.5px;text-transform:uppercase">
+          💬 Mensagem para o cliente via WhatsApp
+        </div>
+        <button onclick="gerarMsgTransferencia()"
+          style="font-size:10px;background:transparent;border:1px solid rgba(37,211,102,.3);
+                 color:var(--green);border-radius:5px;padding:3px 9px;cursor:pointer;
+                 font-family:'Inter',sans-serif">
+          🔄 Regenerar
+        </button>
+      </div>
+      <textarea id="tr-msg-cliente" rows="5"
+        style="width:100%;box-sizing:border-box;background:var(--bg2);border:1px solid var(--line);
+               border-radius:8px;padding:10px 12px;color:var(--white);font-size:12px;
+               line-height:1.6;font-family:'Inter',sans-serif;resize:vertical"
+        placeholder="A mensagem será gerada automaticamente ao selecionar o novo vendedor..."></textarea>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px">
+        ✏️ Edite a mensagem acima antes de enviar, se quiser personalizar.
+      </div>
+    </div>
+
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('ov-transf')">Cancelar</button>
+      <button onclick="enviarWppTransferencia()"
+        style="padding:9px 18px;background:#25D366;color:#fff;border:none;border-radius:8px;
+               font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;
+               display:flex;align-items:center;gap:7px">
+        💬 Enviar no WhatsApp
+      </button>
+      <button class="btn btn-p" onclick="confirmarTransf()">✓ Transferir com briefing</button>
+    </div>
   </div>
 </div>
 
@@ -1895,6 +1926,58 @@ function excluirProposta(id){
 
 
 
+
+// -- WPP TRANSFERÊNCIA ─────────────────────────────────────────────────────
+function gerarMsgTransferencia(){
+  const c = clientesRisco.find(x=>x.id===transfId);
+  if(!c) return;
+  const novoVend = document.getElementById('tr-para')?.value?.split(' ·')[0] || '[novo vendedor]';
+  const motivo   = document.getElementById('tr-mot')?.value  || 'transferência interna';
+  const wppNum   = c.wpp || '';
+
+  const msg = `Olá, ${c.nome}! 👋
+
+Meu nome é [NOME DO GESTOR] e sou responsável pela equipe comercial da Argepasi Alimentos.
+
+Estou entrando em contato para informar que, a partir de agora, o seu atendimento será realizado pelo nosso consultor *${novoVend}*, que já está inteiramente a par do seu histórico e das suas necessidades.
+
+Essa mudança faz parte de uma reorganização interna da nossa equipe comercial, e posso garantir que a qualidade e a continuidade do seu atendimento serão mantidas.
+
+Em breve, *${novoVend}* entrará em contato para se apresentar e dar seguimento ao nosso relacionamento.
+
+Qualquer dúvida, estou à disposição! 😊
+
+Atenciosamente,
+[NOME DO GESTOR]
+Argepasi Alimentos`;
+
+  const textarea = document.getElementById('tr-msg-cliente');
+  if(textarea) textarea.value = msg;
+}
+
+function enviarWppTransferencia(){
+  const c = clientesRisco.find(x=>x.id===transfId);
+  const msg = document.getElementById('tr-msg-cliente')?.value?.trim();
+
+  if(!msg){ toast('Gere ou escreva a mensagem primeiro','err'); return; }
+
+  const wpp = c?.wpp || '';
+  if(!wpp){
+    // Sem número cadastrado — copia a mensagem e abre WhatsApp Web geral
+    navigator.clipboard?.writeText(msg).then(()=>{
+      toast('Mensagem copiada! Cole no WhatsApp do cliente.','ok');
+    });
+    window.open('https://web.whatsapp.com','_blank');
+    return;
+  }
+
+  // Abre WhatsApp com o número do cliente e mensagem pronta
+  const num = wpp.replace(/\D/g,'');
+  const url  = 'https://wa.me/'+num+'?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+  toast('WhatsApp aberto para '+c.nome,'ok');
+}
+
 // -- EDITAR METAS ─────────────────────────────────────────────────────────
 function abrirModalEditarMetas(){
   const lista = document.getElementById('metas-form-list');
@@ -2076,18 +2159,22 @@ function salvarNovoContrato(){
   const fim = document.getElementById('fc-fim').value;
   const diasRestantes = fim ? Math.floor((new Date(fim)-new Date())/(1000*60*60*24)) : 365;
 
+  const iniFormatado = ini ? new Date(ini+'T12:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+  const fimFormatado = fim ? new Date(fim+'T12:00').toLocaleDateString('pt-BR') : '—';
   const novo = {
-    id: 'C00'+(contratos.length+1),
+    id:       'C00'+(contratos.length+1),
     cliente,
-    prod:   document.getElementById('fc-prod').value,
-    vend:   document.getElementById('fc-vend').value.split(' ·')[0],
-    val:    'R$'+val.toLocaleString('pt-BR')+'/mês',
-    valN:   val,
-    ini:    ini ? new Date(ini+'T12:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR'),
-    fim:    fim ? new Date(fim+'T12:00').toLocaleDateString('pt-BR') : '—',
-    status: 'Ativo',
-    dias:   diasRestantes,
-    obs:    document.getElementById('fc-obs').value,
+    prod:     document.getElementById('fc-prod').value,
+    vend:     document.getElementById('fc-vend').value.split(' ·')[0],
+    val:      'R$'+val.toLocaleString('pt-BR')+'/mês',
+    valN:     val,
+    ini:      iniFormatado,
+    inicio:   iniFormatado,   // alias usado no render
+    fim:      fimFormatado,
+    status:   'Ativo',
+    dias:     diasRestantes,
+    vencDias: diasRestantes,  // alias usado no render
+    obs:      document.getElementById('fc-obs').value,
   };
   contratos.push(novo);
   renderContratos();
@@ -2097,8 +2184,10 @@ function salvarNovoContrato(){
 
 function verContrato(id){
   const c = contratos.find(x=>x.id===id);
-  if(!c) return;
-  // Gera PDF do contrato fictício
+  if(!c){ toast('Contrato não encontrado','err'); return; }
+  // Normaliza campos antes de gerar PDF
+  if(!c.inicio) c.inicio = c.ini || '—';
+  if(!c.vencDias && c.dias) c.vencDias = c.dias;
   gerarPDFContrato(c);
 }
 
@@ -2288,6 +2377,12 @@ function abrirTransf(id){
     <div class="bi"><span>💬</span><div><b>Histórico:</b> 3 propostas enviadas, interesse confirmado, aguardando budget</div></div>
     <div class="bi"><span>⚠️</span><div><b>Objeção anterior:</b> Questionaram prazo de entrega para a região</div></div>`;
   openModal('ov-transf');
+  // Gera mensagem ao abrir se já houver vendedor selecionado
+  setTimeout(()=>{
+    const sel = document.getElementById('tr-para');
+    if(sel) sel.addEventListener('change', gerarMsgTransferencia);
+    gerarMsgTransferencia();
+  }, 200);
 }
 function confirmarTransf(){
   const p=document.getElementById('tr-para').value;
@@ -3185,8 +3280,10 @@ function gerarPDFproposta(id){
 }
 
 async function _gerarPDF_proposta(prop){
-  // Garante que jsPDF está carregado
+  toast('Gerando PDF da proposta...','info');
   await _garantirJsPDF();
+  if(!window.jspdf && window.jsPDF) window.jspdf = {jsPDF: window.jsPDF};
+  if(!window.jspdf){ toast('Erro ao carregar PDF','err'); return; }
   
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -3293,6 +3390,65 @@ async function _gerarPDF_proposta(prop){
   const nome = 'Proposta_' + prop.id + '_' + (prop.cliente||'cliente').replace(/\s/g,'-') + '.pdf';
   doc.save(nome);
   toast('PDF gerado: ' + nome, 'ok');
+}
+
+
+// -- EXPORTAR PDF ─────────────────────────────────────────────────────────
+async function exportarLeadsPDF(){
+  toast('Carregando PDF...','info');
+  await _garantirJsPDF();
+  if(!window.jspdf && window.jsPDF) window.jspdf = {jsPDF: window.jsPDF};
+  if(!window.jspdf){ toast('Erro ao carregar PDF','err'); return; }
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF({orientation:'landscape'});
+  const W = doc.internal.pageSize.getWidth();
+  doc.setFillColor(0,63,127); doc.rect(0,0,W,18,'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.text('Smart Automation CRM - Relatorio de Leads', 14, 12);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text(new Date().toLocaleString('pt-BR'), W-14, 12, {align:'right'});
+  const cols = ['Nome/Empresa','Produto','Vendedor','Tipo','Origem','Etapa','Valor','Ult. Contato'];
+  const rows = leads.map(l=>[l.nome,l.prod,l.vend,l.tipo,l.orig,l.etxt||l.etapa,l.val,l.ult]);
+  if(typeof doc.autoTable==='function'){
+    doc.autoTable({head:[cols],body:rows,startY:22,theme:'striped',
+      headStyles:{fillColor:[0,63,127],textColor:255,fontStyle:'bold',fontSize:9},
+      bodyStyles:{fontSize:8},alternateRowStyles:{fillColor:[240,245,255]},margin:{left:14,right:14}});
+  }
+  const H = doc.internal.pageSize.getHeight();
+  doc.setFontSize(8); doc.setTextColor(100,100,100);
+  doc.text('Smart Automation', 14, H-8);
+  doc.text('Total: '+leads.length+' leads', W-14, H-8, {align:'right'});
+  doc.save('leads_'+new Date().toLocaleDateString('pt-BR').replace(/[/]/g,'-')+'.pdf');
+  toast('PDF exportado!','ok');
+}
+
+async function exportarRelatoriosPDF(){
+  toast('Carregando PDF...','info');
+  await _garantirJsPDF();
+  if(!window.jspdf && window.jsPDF) window.jspdf = {jsPDF: window.jsPDF};
+  if(!window.jspdf){ toast('Erro ao carregar PDF','err'); return; }
+  const {jsPDF} = window.jspdf;
+  const doc = new jsPDF(); const W = doc.internal.pageSize.getWidth();
+  doc.setFillColor(0,63,127); doc.rect(0,0,W,22,'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(14);
+  doc.text('Smart Automation CRM', 14, 10);
+  doc.setFontSize(10); doc.setFont('helvetica','normal');
+  doc.text('Relatorio Executivo - '+new Date().toLocaleDateString('pt-BR'), 14, 17);
+  const kpis=[['KPI','Valor','Observacao'],
+    ['Leads Ativos',String(leads.length),'Total no sistema'],
+    ['Fechamentos do Mes','9','+3 vs mes anterior'],
+    ['Taxa de Conversao','19%','Meta: 25%'],
+    ['Pipeline Total','R$340.000','23 negocios abertos'],
+    ['Receita Fechada','R$127.000','+22% vs mai']];
+  if(typeof doc.autoTable==='function'){
+    doc.autoTable({head:[kpis[0]],body:kpis.slice(1),startY:30,theme:'striped',
+      headStyles:{fillColor:[0,63,127],textColor:255,fontSize:10}});
+  }
+  const H = doc.internal.pageSize.getHeight();
+  doc.setFontSize(8); doc.setTextColor(100,100,100);
+  doc.text('Smart Automation', 14, H-8);
+  doc.save('relatorio_'+new Date().toLocaleDateString('pt-BR').replace(/[/]/g,'-')+'.pdf');
+  toast('Relatorio PDF exportado!','ok');
 }
 
 async function _garantirJsPDF(){
@@ -3411,9 +3567,9 @@ function renderContratos(){
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px">
-        <span>📅 Início: ${c.inicio}</span>
+        <span>📅 Início: ${c.inicio||c.ini||"—"}</span>
         <span>📅 Vencimento: ${c.fim}</span>
-        <span style="color:${corBarra};font-weight:700">⏱ ${c.vencDias} dias restantes</span>
+        <span style="color:${corBarra};font-weight:700">⏱ ${vencDias} dias restantes</span>
       </div>
       <div class="vigencia-bar"><div class="vigencia-fill" style="width:${pct}%;background:${corBarra}"></div></div>
       <div style="display:flex;gap:6px;margin-top:10px">
