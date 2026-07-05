@@ -2490,14 +2490,28 @@ function toggleChatGeral(){
   chatGeralAberto = !chatGeralAberto;
   const win = document.getElementById('chat-equipe-win');
   if(!win) return;
-  win.style.opacity     = chatGeralAberto ? '1' : '0';
-  win.style.transform   = chatGeralAberto ? 'scale(1) translateY(0)' : 'scale(.92) translateY(18px)';
-  win.style.pointerEvents = chatGeralAberto ? 'all' : 'none';
+  if(chatGeralAberto){
+    win.style.display = 'flex';
+    win.style.flexDirection = 'column';
+    requestAnimationFrame(()=>{
+      win.style.opacity = '1';
+      win.style.transform = 'scale(1) translateY(0)';
+      win.style.pointerEvents = 'all';
+    });
+  } else {
+    win.style.opacity = '0';
+    win.style.transform = 'scale(.92) translateY(18px)';
+    win.style.pointerEvents = 'none';
+    setTimeout(()=>{ win.style.display = 'none'; }, 220);
+  }
 
   if(chatGeralAberto){
     chatSwitchTab(chatTabAtiva);
-    if(chatTabAtiva === 'ia' && typeof chatLog !== 'undefined' && chatLog.length === 0){
-      _botBoasVindas();
+    if(chatTabAtiva === 'ia'){
+      if(typeof chatLog === 'undefined') window.chatLog = [];
+      if(chatLog.length === 0 && typeof _botBoasVindas === 'function'){
+        setTimeout(_botBoasVindas, 100);
+      }
     }
     if(chatTabAtiva === 'equipe'){
       renderChatContatos();
@@ -6243,8 +6257,4 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
       <div style="background:var(--bg3,#0D1530);padding:10px 14px;border-radius:12px;
                   border-bottom-left-radius:3px">
         <div style="display:flex;gap:4px;align-items:center">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299);
-                       animation:cop-bounce .8s infinite"></span>
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299);
-                       animation:cop-bounce .8s .15s infinite"></span>
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299)
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--mut
