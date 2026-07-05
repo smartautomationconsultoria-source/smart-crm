@@ -6257,4 +6257,543 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
       <div style="background:var(--bg3,#0D1530);padding:10px 14px;border-radius:12px;
                   border-bottom-left-radius:3px">
         <div style="display:flex;gap:4px;align-items:center">
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--mut
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299);
+                       animation:cop-bounce .8s infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299);
+                       animation:cop-bounce .8s .15s infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299);
+                       animation:cop-bounce .8s .3s infinite"></span>
+        </div>
+      </div>
+    `;
+
+    // Injeta animação se ainda não existe
+    if (!document.getElementById('cop-anim-style')) {
+      const style = document.createElement('style');
+      style.id = 'cop-anim-style';
+      style.textContent = `@keyframes cop-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}`;
+      document.head.appendChild(style);
+    }
+
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function _removerTyping() {
+    document.getElementById('copilot-typing')?.remove();
+  }
+
+  function _atualizarContexto(label) {
+    const ctx = document.getElementById('copilot-ctx');
+    if (ctx) ctx.textContent = `📍 ${label}`;
+  }
+
+  function _getContextoLabel() {
+    return _perfil === 'admin'
+      ? 'Visão completa - todos os vendedores e leads'
+      : `Sua carteira - ${_vendedorNome}`;
+  }
+
+  // -- BOTÃO FLUTUANTE -------------------------------------------------------
+  function _renderBotaoFlutuante() {
+    return; // Desabilitado: usar chatbot original
+    document.getElementById('copilot-fab')?.remove();
+
+    const fab = document.createElement('button');
+    fab.id = 'copilot-fab';
+    fab.title = 'Abrir Copilot IA';
+    fab.style.cssText = `
+      position:fixed;bottom:24px;left:24px;z-index:695;
+      width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
+      background:linear-gradient(135deg,#1E6FFF,#0A3BAA);color:#fff;
+      font-size:22px;display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 24px rgba(30,111,255,.55);transition:transform .18s,box-shadow .18s;
+      font-family:'Inter',sans-serif;
+    `;
+    fab.textContent = '🤖';
+    fab.addEventListener('click', toggle);
+    fab.addEventListener('mouseover', () => {
+      fab.style.transform = 'scale(1.08)';
+      fab.style.boxShadow = '0 0 36px rgba(30,111,255,.75)';
+    });
+    fab.addEventListener('mouseout', () => {
+      fab.style.transform = 'scale(1)';
+      fab.style.boxShadow = '0 0 24px rgba(30,111,255,.55)';
+    });
+
+    document.body.appendChild(fab);
+  }
+
+  // -- API PÚBLICA -----------------------------------------------------------
+  function init(perfil = 'admin', vendedorNome = null) {
+    _perfil       = perfil;
+    _vendedorNome = vendedorNome;
+    _historico    = [];
+
+    _renderBotaoFlutuante();
+    _renderSidebar();
+
+    console.log('[Copilot] Inicializado - perfil:', perfil, vendedorNome || '');
+  }
+
+  function abrir() {
+    const sidebar = document.getElementById('copilot-sidebar');
+    if (!sidebar) return;
+    sidebar.style.transform = 'translateX(0)';
+    _aberto = true;
+    _atualizarContexto(_getContextoLabel());
+  }
+
+  function fechar() {
+    const sidebar = document.getElementById('copilot-sidebar');
+    if (!sidebar) return;
+    sidebar.style.transform = 'translateX(100%)';
+    _aberto = false;
+  }
+
+  function toggle() {
+    _aberto ? fechar() : abrir();
+  }
+
+  function limparHistorico() {
+    _historico = [];
+    const msgs = document.getElementById('copilot-msgs');
+    if (msgs) msgs.innerHTML = '';
+    _adicionarMensagem('bot', 'Histórico limpo. Como posso ajudar?');
+  }
+
+  return {
+    init, abrir, fechar, toggle, enviar, perguntar, limparHistorico
+  };
+
+})();
+
+window.SmartCopilot = SmartCopilot;
+
+</script>
+
+<script>
+/**
+ * Smart Automation CRM - Script de Integração
+ *
+ * COMO USAR: Adicione ao final do <body> do CRM, APÓS os outros scripts.
+ *
+ * Ordem de carregamento no HTML:
+ * 1. <link rel="manifest" id="pwa-manifest-link">
+<meta name="theme-color" content="#1E6FFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Smart CRM">
+<link rel="apple-touch-icon" id="apple-touch-icon-link">
+ * 2. <script src="offline-db.js"><\/script>
+ * 3. <script src="notifications.js"><\/script>
+ * 4. <script src="copilot.js"><\/script>
+ * 5. <script src="crm-integration.js"><\/script>  ← este arquivo
+ *
+ * Para intranet: adicione os 4 scripts acima no HTML existente.
+ * Para PWA instalável: adicione também o registro do SW abaixo.
+ */
+
+// -- CONFIGURAÇÃO GLOBAL DO CRM ---------------------------------------------
+// Edite estes valores antes de publicar
+window.__CRM_CONFIG__ = {
+  appsScriptUrl:  'https://script.google.com/macros/s/AKfycbxYR2aM_SIpClE_ugEtbTxhBcXKTCLITzkGj-awu5vl2By16-720SpeNbze0HFIuYPD/exec',   // URL do Web App do Google Apps Script
+  protheusUrl:    'https://protheus.suaempresa.com.br', // URL da API REST do Protheus
+  protheusToken:  '',                              // Bearer token do Protheus (obtenha via login)
+  versao:         '1.0.0',
+  ambiente:       'demo',                          // 'demo' | 'producao'
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 1. REGISTRO DO SERVICE WORKER (PWA)
+// ═══════════════════════════════════════════════════════════════════════════════
+async function registrarServiceWorker() {
+  // SW externo desabilitado — SW inline via Blob já registrado no <head>
+  // SW via Blob já registrado no head
+}
+
+function _mostrarBannerAtualizacao(newWorker) {
+  const banner = document.createElement('div');
+  banner.style.cssText = `
+    position:fixed;bottom:0;left:0;right:0;z-index:9999;
+    background:linear-gradient(135deg,#1E6FFF,#0A3BAA);color:#fff;
+    padding:12px 20px;display:flex;align-items:center;justify-content:space-between;
+    font-family:'Inter',sans-serif;font-size:13px;
+    box-shadow:0 -4px 20px rgba(0,0,0,.4);
+  `;
+  banner.innerHTML = `
+    <span>🔄 Nova versão do CRM disponível!</span>
+    <button onclick="window.location.reload()"
+      style="background:#fff;color:#1E6FFF;border:none;border-radius:6px;
+             padding:6px 16px;cursor:pointer;font-weight:600;font-family:'Inter',sans-serif">
+      Atualizar agora
+    </button>
+  `;
+  document.body.appendChild(banner);
+  newWorker.postMessage({ type: 'SKIP_WAITING' });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 2. PROMPT DE INSTALAÇÃO (intranet / app)
+// ═══════════════════════════════════════════════════════════════════════════════
+let _installPromptEvent = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _installPromptEvent = e;
+  console.log('[PWA] Prompt de instalação capturado.');
+  _mostrarBotaoInstalar();
+});
+
+function _mostrarBotaoInstalar() {
+  // Adiciona botão de instalar no topbar se ainda não existir
+  if (document.getElementById('pwa-install-btn')) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'pwa-install-btn';
+  btn.title = 'Instalar CRM como aplicativo';
+  btn.style.cssText = `
+    padding:6px 13px;border-radius:7px;border:1px solid rgba(30,111,255,.35);
+    background:rgba(30,111,255,.12);color:var(--blue3,#4A9AFF);cursor:pointer;
+    font-size:12px;font-weight:600;font-family:'Inter',sans-serif;
+    transition:all .15s;display:flex;align-items:center;gap:6px;
+  `;
+  btn.innerHTML = '📲 Instalar CRM';
+  btn.addEventListener('click', instalarApp);
+  btn.addEventListener('mouseover', () => btn.style.background = 'rgba(30,111,255,.25)');
+  btn.addEventListener('mouseout',  () => btn.style.background = 'rgba(30,111,255,.12)');
+
+  const topbarRight = document.querySelector('.tr');
+  if (topbarRight) {
+    topbarRight.insertBefore(btn, topbarRight.firstChild);
+  }
+}
+
+async function instalarApp() {
+  if (!_installPromptEvent) {
+    // Fallback: instrução manual
+    alert('Para instalar o CRM:\n\n📱 Android/Chrome: Menu ⋮ → "Adicionar à tela inicial"\n💻 Desktop/Chrome: Ícone ⊕ na barra de endereços → Instalar\n🍎 iOS/Safari: Compartilhar → "Adicionar à Tela de Início"');
+    return;
+  }
+
+  _installPromptEvent.prompt();
+  const result = await _installPromptEvent.userChoice;
+
+  if (result.outcome === 'accepted') {
+    console.log('[PWA] App instalado com sucesso!');
+    document.getElementById('pwa-install-btn')?.remove();
+  }
+
+  _installPromptEvent = null;
+}
+
+// Detecta se já está instalado como PWA
+window.addEventListener('appinstalled', () => {
+  console.log('[PWA] CRM instalado como aplicativo.');
+  document.getElementById('pwa-install-btn')?.remove();
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 3. BANNER OFFLINE / ONLINE
+// ═══════════════════════════════════════════════════════════════════════════════
+function _renderBannerOffline() {
+  const existing = document.getElementById('offline-banner');
+  if (existing) existing.remove();
+
+  if (navigator.onLine) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'offline-banner';
+  banner.style.cssText = `
+    position:fixed;top:0;left:0;right:0;z-index:9998;
+    background:#F59E0B;color:#1C1917;padding:8px 20px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  `;
+  banner.innerHTML = `
+    📶 Modo offline - dados carregados localmente. Pedidos serão sincronizados ao reconectar.
+    <span id="offline-pending" style="background:rgba(0,0,0,.15);padding:2px 8px;border-radius:10px">
+      Verificando...
+    </span>
+  `;
+  document.body.insertBefore(banner, document.body.firstChild);
+
+  // Conta pendentes
+  SmartOfflineDB.totalPendentes().then(n => {
+    const span = document.getElementById('offline-pending');
+    if (span) span.textContent = n > 0 ? `${n} item(s) na fila` : 'Nenhum pendente';
+  });
+}
+
+window.addEventListener('online',  () => {
+  document.getElementById('offline-banner')?.remove();
+  // Toast de reconexão
+  window.dispatchEvent(new CustomEvent('crm:toast', {
+    detail: { msg: '📶 Conexão restaurada! Sincronizando dados...', tipo: 'ok' }
+  }));
+});
+
+window.addEventListener('offline', () => {
+  _renderBannerOffline();
+  window.dispatchEvent(new CustomEvent('crm:toast', {
+    detail: { msg: '📶 Sem internet - CRM em modo offline', tipo: 'info' }
+  }));
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 4. LISTENER DO TOAST GLOBAL (eventos internos do sistema)
+// ═══════════════════════════════════════════════════════════════════════════════
+window.addEventListener('crm:toast', (e) => {
+  const { msg, tipo } = e.detail || {};
+  if (typeof window.toast === 'function') {
+    window.toast(msg, tipo === 'ok' ? 'ok' : tipo === 'info' ? 'info' : 'err');
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 5. INICIALIZAÇÃO PRINCIPAL
+// ═══════════════════════════════════════════════════════════════════════════════
+async function inicializarCRM() {
+  console.log('[CRM] Inicializando Smart Automation CRM v' + window.__CRM_CONFIG__.versao);
+
+  // Detecta perfil atual (definido pelo login)
+  const perfil      = window.currentPerfil?.role?.toLowerCase().includes('admin') ? 'admin' : 'vendedor';
+  const vendedorNome = perfil === 'vendedor' ? window.currentPerfil?.nome : null;
+
+  // 1. Registra Service Worker
+  await registrarServiceWorker();
+
+  // 2. Inicializa banco offline
+  await SmartOfflineDB.init();
+
+  // 3. Carrega dados do servidor (com fallback para IndexedDB)
+  const carregouServidor = await SmartOfflineDB.Sincronizador.carregarDadosServidor(perfil, vendedorNome);
+  if (!carregouServidor) {
+    console.log('[CRM] Usando dados do IndexedDB (offline ou servidor indisponível)');
+  }
+
+  // 4. Inicializa Central de Notificações
+  if (window.SmartNotificacoes) {
+    await SmartNotificacoes.init(perfil, vendedorNome);
+  }
+
+  // 5. Inicializa Copilot
+  if (window.SmartCopilot) {
+    SmartCopilot.init(perfil, vendedorNome);
+  }
+
+  // 6. Banner offline se necessário
+  _renderBannerOffline();
+
+  // 7. Listener para abrir lead via notificação
+  window.addEventListener('crm:abrir-lead', (e) => {
+    const { leadId } = e.detail || {};
+    if (leadId && typeof verDet === 'function') {
+      verDet(typeof leadId === 'number' ? leadId : parseInt(leadId));
+    }
+  });
+
+  // 8. Notificações de demo (apenas em ambiente demo)
+  if (window.__CRM_CONFIG__.ambiente === 'demo') {
+    setTimeout(() => _dispararNotifDemo(), 5000);
+  }
+
+  console.log('[CRM] Inicialização concluída. Perfil:', perfil, '| Online:', navigator.onLine);
+}
+
+function _dispararNotifDemo() {
+  if (!window.SmartNotificacoes) return;
+
+  // Simula notificações realistas para demonstração
+  SmartNotificacoes.criar('risco_carteira',
+    'Risco de carteira: Frigorífico Bela Vista',
+    'Cliente vinculado exclusivamente a Carlos Silva. 45 dias de relacionamento.',
+    { leadId: 1 }
+  );
+
+  setTimeout(() => {
+    SmartNotificacoes.criar('lead_respondeu',
+      'Pet Food Varejo RJ respondeu!',
+      '"Olá! Tenho interesse em analisar a proposta. Pode me ligar amanhã?"',
+      { leadId: 8 }
+    );
+  }, 3000);
+}
+
+// -- INICIA TUDO ---------------------------------------------------------------
+// Aguarda o DOM estar pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', inicializarCRM);
+} else {
+  inicializarCRM();
+}
+
+// Expõe função de instalação globalmente
+window.instalarCRMComoApp = instalarApp;
+
+</script>
+
+
+<!-- BOTÃO DE AJUDA -->
+
+
+<!-- JANELA DE AJUDA -->
+
+
+
+<!-- ═══ CHAT INTERNO DA EQUIPE ═══════════════════════════════════════════ -->
+<div id="chat-equipe-win" style="
+  position:fixed;bottom:88px;right:24px;z-index:9000;
+  width:380px;height:540px;
+  background:var(--bg2,#FFFFFF);
+  border:1px solid var(--line2,rgba(0,63,127,0.2));
+  border-radius:14px;
+  display:flex;flex-direction:column;
+  opacity:0;transform:scale(.92) translateY(18px);pointer-events:none;
+  transition:opacity .22s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 20px 50px rgba(0,0,0,0.15);
+  font-family:'Inter',Arial,sans-serif;
+  overflow:hidden">
+
+  <!-- Header com abas -->
+  <div style="background:linear-gradient(135deg,#003F7F,#0056B3);flex-shrink:0">
+    <!-- Abas -->
+    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.15)">
+      <button id="chat-tab-ia" onclick="chatSwitchTab('ia')"
+        style="flex:1;padding:11px 8px;background:rgba(255,255,255,0.18);border:none;
+               color:#fff;font-size:12px;font-weight:700;cursor:pointer;
+               font-family:'Inter',Arial,sans-serif;border-bottom:2px solid #fff;
+               transition:all .15s">
+        &#129302; Copilot IA
+      </button>
+      <button id="chat-tab-equipe" onclick="chatSwitchTab('equipe')"
+        style="flex:1;padding:11px 8px;background:transparent;border:none;
+               color:rgba(255,255,255,0.7);font-size:12px;font-weight:600;cursor:pointer;
+               font-family:'Inter',Arial,sans-serif;border-bottom:2px solid transparent;
+               transition:all .15s;position:relative">
+        &#128172; Equipe
+        <span id="chat-equipe-badge" style="display:none;position:absolute;top:6px;right:10px;
+          background:#EF4444;color:#fff;border-radius:50%;width:16px;height:16px;
+          font-size:9px;font-weight:800;line-height:16px;text-align:center">0</span>
+      </button>
+      <button onclick="fecharChatGeral()"
+        style="padding:11px 14px;background:none;border:none;color:rgba(255,255,255,0.7);
+               font-size:16px;cursor:pointer">&#10005;</button>
+    </div>
+    <!-- Status bar dinâmica -->
+    <div id="chat-status-bar" style="padding:6px 14px;font-size:10px;color:rgba(255,255,255,0.75)">
+      IA ativa &#183; claude-sonnet-4-6
+    </div>
+  </div>
+
+  <!-- ── PAINEL IA ──────────────────────────────────────────────────── -->
+  <div id="chat-panel-ia" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div class="cmsgs" id="cmsgs" style="flex:1;overflow-y:auto;padding:12px"></div>
+    <div class="cquick" id="cquick" style="padding:8px 10px;border-top:1px solid var(--line,rgba(0,63,127,0.12));display:flex;gap:5px;flex-wrap:wrap">
+      <button class="qb" onclick="askBot('Quais leads est&#227;o sem contato h&#225; mais de 7 dias?')">Leads parados</button>
+      <button class="qb" onclick="askBot('Como est&#225; o pipeline?')">Pipeline</button>
+      <button class="qb" onclick="askBot('Qual vendedor tem mais perdas?')">Perdas</button>
+      <button class="qb" onclick="askBot('Como est&#225; minha performance?')">Minha performance</button>
+    </div>
+    <div class="cia" style="padding:8px 10px;border-top:1px solid var(--line,rgba(0,63,127,0.12));display:flex;gap:7px;align-items:flex-end">
+      <textarea class="ci" id="ci" placeholder="Pergunte sobre leads, vendas..." rows="1"
+        style="flex:1;resize:none;overflow:hidden;min-height:36px;max-height:90px;
+               line-height:1.4;padding:8px 10px;border-radius:8px;font-size:12px"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'">
+      </textarea>
+      <button class="csend" id="csend-btn" onclick="sendMsg()" title="Enviar">&#10148;</button>
+    </div>
+  </div>
+
+  <!-- ── PAINEL EQUIPE ──────────────────────────────────────────────── -->
+  <div id="chat-panel-equipe" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+
+    <!-- Lista de contatos -->
+    <div id="chat-contatos" style="flex:1;overflow-y:auto">
+      <div style="padding:10px 14px 4px;font-size:10px;color:var(--muted,#64748B);
+                  text-transform:uppercase;letter-spacing:1px;font-weight:600">
+        Equipe
+      </div>
+      <div id="chat-lista-contatos"></div>
+    </div>
+
+    <!-- Conversa individual (oculta inicialmente) -->
+    <div id="chat-conversa" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+      <!-- Header da conversa -->
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;
+                  border-bottom:1px solid var(--line,rgba(0,63,127,0.12));flex-shrink:0">
+        <button onclick="voltarContatos()"
+          style="background:none;border:none;color:var(--blue,#003F7F);
+                 font-size:18px;cursor:pointer;padding:0 4px">&#8249;</button>
+        <div id="conv-avatar" style="width:32px;height:32px;border-radius:50%;
+             background:linear-gradient(135deg,#003F7F,#0056B3);
+             display:flex;align-items:center;justify-content:center;
+             color:#fff;font-size:12px;font-weight:800;flex-shrink:0"></div>
+        <div style="flex:1">
+          <div id="conv-nome" style="font-size:13px;font-weight:700;color:var(--white,#0F172A)"></div>
+          <div id="conv-status" style="font-size:10px;color:var(--green,#059669)">&#9679; Online</div>
+        </div>
+      </div>
+
+      <!-- Mensagens da conversa -->
+      <div id="chat-msgs-conversa" style="flex:1;overflow-y:auto;padding:12px;
+           display:flex;flex-direction:column;gap:8px;background:var(--bg3,#F5F7FA)">
+      </div>
+
+      <!-- Input da conversa -->
+      <div style="padding:8px 10px;border-top:1px solid var(--line,rgba(0,63,127,0.12));
+                  background:var(--bg2,#FFFFFF);flex-shrink:0">
+
+        <!-- Preview de arquivo -->
+        <div id="chat-file-preview" style="display:none;background:var(--bg3,#F5F7FA);
+             border-radius:6px;padding:6px 10px;margin-bottom:6px;font-size:11px;
+             color:var(--muted,#64748B);display:flex;align-items:center;gap:6px">
+          <span id="chat-file-nome"></span>
+          <button onclick="removerArquivo()"
+            style="background:none;border:none;color:var(--red,#DC2626);cursor:pointer;font-size:12px">&#10005;</button>
+        </div>
+
+        <div style="display:flex;gap:6px;align-items:flex-end">
+          <!-- Botão anexar -->
+          <label title="Anexar arquivo" style="cursor:pointer;flex-shrink:0">
+            <input type="file" id="chat-file-input" style="display:none"
+              accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+              onchange="selecionarArquivo(this)">
+            <div style="width:34px;height:34px;border-radius:8px;
+                 background:var(--bg3,#F5F7FA);border:1px solid var(--line,rgba(0,63,127,0.12));
+                 display:flex;align-items:center;justify-content:center;
+                 font-size:16px;color:var(--muted,#64748B)">&#128206;</div>
+          </label>
+
+          <!-- Campo de texto -->
+          <textarea id="chat-input-msg" placeholder="Mensagem... use @ para mencionar lead"
+            rows="1" style="flex:1;resize:none;overflow:hidden;min-height:34px;max-height:80px;
+               background:var(--bg3,#F5F7FA);border:1px solid var(--line,rgba(0,63,127,0.12));
+               border-radius:8px;padding:7px 10px;color:var(--white,#0F172A);font-size:12px;
+               line-height:1.4;font-family:'Inter',Arial,sans-serif"
+            onkeydown="chatEquipKeydown(event)"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px';chatEquipInput(this)">
+          </textarea>
+
+          <!-- Botão enviar -->
+          <button onclick="enviarMsgEquipe()"
+            style="width:34px;height:34px;border-radius:8px;flex-shrink:0;
+                 background:linear-gradient(135deg,#003F7F,#0056B3);border:none;
+                 color:#fff;font-size:15px;cursor:pointer;display:flex;
+                 align-items:center;justify-content:center">&#10148;</button>
+        </div>
+
+        <!-- Sugestões de @ -->
+        <div id="chat-mencao-list" style="display:none;position:absolute;bottom:60px;left:10px;right:10px;
+             background:var(--bg2,#FFFFFF);border:1px solid var(--line2,rgba(0,63,127,0.2));
+             border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);max-height:150px;overflow-y:auto;z-index:10">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
