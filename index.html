@@ -1157,59 +1157,22 @@ input::placeholder { color: #94A3B8; }
 <div class="toast" id="t-el"><span id="t-ico"></span><span id="t-msg"></span></div>
 
 <!-- CHATBOT -->
-<button class="cfab" onclick="toggleChat()" title="Copilot IA — Smart CRM" id="main-chat-btn">
-  <span id="chat-ico-main" style="font-size:22px">&#129302;</span>
-  <div class="cun" id="cun" style="display:none">0</div>
+<button class="cfab" id="main-chat-btn" onclick="toggleChatGeral()"
+  title="Copilot IA + Chat da Equipe"
+  style="position:fixed;bottom:24px;right:24px;z-index:900;
+         width:52px;height:52px;border-radius:50%;border:none;
+         background:linear-gradient(135deg,#003F7F,#0056B3);
+         color:#fff;font-size:22px;cursor:pointer;
+         box-shadow:0 4px 20px rgba(0,63,127,0.35);
+         transition:all .18s;display:flex;align-items:center;justify-content:center">
+  &#129302;
+  <div id="chat-total-badge" style="display:none;position:absolute;top:-3px;right:-3px;
+    background:#EF4444;color:#fff;border-radius:50%;width:18px;height:18px;
+    font-size:9px;font-weight:800;line-height:18px;text-align:center;
+    border:2px solid #fff">0</div>
 </button>
 
-<div class="cwin" id="cwin">
-  <!-- Header -->
-  <div class="chdr">
-    <div class="chdr-ico">&#129302;</div>
-    <div style="flex:1">
-      <div class="chn">Assistente Smart CRM</div>
-      <div class="chs">
-        <div class="cdot" id="bot-status-dot" style="background:var(--green,#10B981)"></div>
-        <span id="bot-status-txt">Conectando...</span>
-      </div>
-    </div>
-    <button onclick="limparChat()" title="Limpar conversa"
-      style="background:rgba(255,255,255,.15);border:none;border-radius:6px;padding:4px 8px;color:#fff;cursor:pointer;font-size:12px;margin-right:4px">
-      &#128465;
-    </button>
-    <button onclick="toggleChat()"
-      style="background:rgba(255,255,255,.15);border:none;border-radius:6px;padding:4px 9px;color:#fff;cursor:pointer;font-size:16px">✕</button>
-  </div>
 
-  <!-- Contexto do perfil ativo -->
-  <div id="bot-ctx-bar" style="padding:6px 13px;background:rgba(30,111,255,.1);border-bottom:1px solid var(--line,rgba(30,111,255,.15));font-size:11px;color:var(--blue3,#4A9AFF);flex-shrink:0">
-    &#128205; Aguardando login...
-  </div>
-
-  <!-- Mensagens -->
-  <div class="cmsgs" id="cmsgs"></div>
-
-  <!-- Atalhos rápidos -->
-  <div class="cquick" id="cquick">
-    <button class="qb" onclick="askBot('Quais leads estão sem contato há mais de 7 dias?')">Leads parados</button>
-    <button class="qb" onclick="askBot('Qual vendedor tem mais perdas este mês?')">Análise de perdas</button>
-    <button class="qb" onclick="askBot('Quais clientes estão em risco de carteira?')">Risco carteira</button>
-    <button class="qb" onclick="askBot('Como está o pipeline e a previsão de receita?')">Pipeline</button>
-    <button class="qb" onclick="askBot('Como está minha performance este mês?')">Minha performance</button>
-  </div>
-
-  <!-- Input -->
-  <div class="cia">
-    <textarea class="ci" id="ci"
-      placeholder="Pergunte sobre leads, vendas, performance..."
-      rows="1"
-      style="resize:none;overflow:hidden;min-height:36px;max-height:100px;line-height:1.4;padding-top:8px"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
-      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'">
-    </textarea>
-    <button class="csend" id="csend-btn" onclick="sendMsg()" title="Enviar (Enter)">➤</button>
-  </div>
-</div>
 
 <script>
 
@@ -2483,6 +2446,365 @@ function renderAtiv(){
   </div>`).join('');
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CHAT UNIFICADO — Copilot IA + Chat da Equipe
+// ═══════════════════════════════════════════════════════════════════════════
+
+let chatGeralAberto = false;
+let chatTabAtiva = 'ia';
+let chatContatoAtivo = null;
+let chatArquivoSelecionado = null;
+
+// Dados do chat (em produção: Google Sheets via Apps Script)
+const chatContatos = [
+  {id:'carlos',  nome:'Carlos Silva',  ini:'CS', tipo:'PJ',  status:'online',  naoLidas:2},
+  {id:'ana',     nome:'Ana Ferreira',  ini:'AF', tipo:'CLT', status:'online',  naoLidas:0},
+  {id:'juliana', nome:'Juliana Mendes',ini:'JM', tipo:'CLT', status:'ausente', naoLidas:1},
+  {id:'roberto', nome:'Roberto Costa', ini:'RC', tipo:'PJ',  status:'offline', naoLidas:0},
+  {id:'marcos',  nome:'Marcos Pereira',ini:'MP', tipo:'PJ',  status:'offline', naoLidas:0},
+  {id:'gm',      nome:'Grasiele M.',   ini:'GM', tipo:'Admin',status:'online', naoLidas:0},
+];
+
+const chatMensagens = {
+  carlos: [
+    {de:'carlos', texto:'Oi! O Frigorίfico Bela Vista pediu mais informações sobre o frete.', hora:'09:14', lida:true},
+    {de:'gm', texto:'Manda a tabela de logística para eles, Carlos.', hora:'09:16', lida:true},
+    {de:'carlos', texto:'Feito! Eles devem responder até amanhã.', hora:'09:18', lida:true},
+    {de:'carlos', texto:'@Frigorίfico Bela Vista já tem proposta enviada, seguindo up agora.', hora:'10:30', lida:false},
+    {de:'carlos', texto:'Consigo fechar essa semana se vocês aprovarem o desconto de 5%.', hora:'10:31', lida:false},
+  ],
+  ana: [
+    {de:'gm', texto:'Ana, como está a Distribuidora Pampa?', hora:'08:45', lida:true},
+    {de:'ana', texto:'Estão avaliando a proposta. Ligam amanhã.', hora:'08:50', lida:true},
+  ],
+  juliana: [
+    {de:'juliana', texto:'Posso usar o desconto de gerente no Pet Shop Rede Estrela?', hora:'11:00', lida:false},
+  ],
+  roberto: [],
+  marcos: [],
+  gm: [],
+};
+
+function toggleChatGeral(){
+  chatGeralAberto = !chatGeralAberto;
+  const win = document.getElementById('chat-equipe-win');
+  if(!win) return;
+  win.style.opacity     = chatGeralAberto ? '1' : '0';
+  win.style.transform   = chatGeralAberto ? 'scale(1) translateY(0)' : 'scale(.92) translateY(18px)';
+  win.style.pointerEvents = chatGeralAberto ? 'all' : 'none';
+
+  if(chatGeralAberto){
+    chatSwitchTab(chatTabAtiva);
+    if(chatTabAtiva === 'ia' && typeof chatLog !== 'undefined' && chatLog.length === 0){
+      _botBoasVindas();
+    }
+    if(chatTabAtiva === 'equipe'){
+      renderChatContatos();
+    }
+    atualizarBadgeTotal();
+  }
+}
+
+function fecharChatGeral(){
+  chatGeralAberto = false;
+  const win = document.getElementById('chat-equipe-win');
+  if(win){
+    win.style.opacity = '0';
+    win.style.transform = 'scale(.92) translateY(18px)';
+    win.style.pointerEvents = 'none';
+  }
+}
+
+function chatSwitchTab(tab){
+  chatTabAtiva = tab;
+  const pIA     = document.getElementById('chat-panel-ia');
+  const pEquipe = document.getElementById('chat-panel-equipe');
+  const tIA     = document.getElementById('chat-tab-ia');
+  const tEquipe = document.getElementById('chat-tab-equipe');
+  const statusBar = document.getElementById('chat-status-bar');
+
+  if(tab === 'ia'){
+    if(pIA) pIA.style.display = 'flex';
+    if(pEquipe) pEquipe.style.display = 'none';
+    if(tIA){ tIA.style.background='rgba(255,255,255,0.18)'; tIA.style.borderBottomColor='#fff'; tIA.style.color='#fff'; }
+    if(tEquipe){ tEquipe.style.background='transparent'; tEquipe.style.borderBottomColor='transparent'; tEquipe.style.color='rgba(255,255,255,0.7)'; }
+    if(statusBar) statusBar.textContent = 'IA ativa · claude-sonnet-4-6';
+    setTimeout(()=>{ const ci=document.getElementById('ci'); if(ci) ci.focus(); }, 200);
+  } else {
+    if(pIA) pIA.style.display = 'none';
+    if(pEquipe){ pEquipe.style.display = 'flex'; pEquipe.style.flexDirection='column'; }
+    if(tIA){ tIA.style.background='transparent'; tIA.style.borderBottomColor='transparent'; tIA.style.color='rgba(255,255,255,0.7)'; }
+    if(tEquipe){ tEquipe.style.background='rgba(255,255,255,0.18)'; tEquipe.style.borderBottomColor='#fff'; tEquipe.style.color='#fff'; }
+    if(statusBar) statusBar.textContent = (chatContatoAtivo ? 'Conversa com ' + chatContatoAtivo.nome : 'Chat interno da equipe');
+    voltarContatos();
+    renderChatContatos();
+    zerarNaoLidas();
+  }
+}
+
+function renderChatContatos(){
+  const lista = document.getElementById('chat-lista-contatos');
+  if(!lista) return;
+
+  const perfil = currentPerfil?.role?.toLowerCase().includes('admin') ? 'admin' : 'vendedor';
+  const meId   = perfil === 'admin' ? 'gm' : (currentPerfil?.nome?.split(' ')[0]?.toLowerCase() || 'gm');
+
+  // Filtra: vendedor só vê o gestor; admin vê todos
+  const contatos = perfil === 'admin'
+    ? chatContatos.filter(c => c.id !== 'gm')
+    : chatContatos.filter(c => c.id === 'gm');
+
+  lista.innerHTML = contatos.map(c => {
+    const msgs = chatMensagens[c.id] || [];
+    const ultima = msgs[msgs.length-1];
+    const naoLidas = msgs.filter(m => m.de !== 'gm' && m.de !== meId && !m.lida).length;
+    const corStatus = c.status==='online'?'#059669':c.status==='ausente'?'#D97706':'#94A3B8';
+
+    return `<div onclick="abrirConversa('${c.id}')"
+      style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;
+             border-bottom:1px solid var(--line,rgba(0,63,127,0.08));transition:background .12s;
+             ${naoLidas?'background:rgba(0,63,127,0.04)':''}"
+      onmouseover="this.style.background='rgba(0,63,127,0.06)'"
+      onmouseout="this.style.background='${naoLidas?'rgba(0,63,127,0.04)':'transparent'}'">
+      <div style="position:relative;flex-shrink:0">
+        <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#003F7F,#0056B3);
+             display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800">
+          ${c.ini}
+        </div>
+        <div style="position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;
+             background:${corStatus};border:2px solid #fff"></div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:13px;font-weight:${naoLidas?700:600};color:var(--white,#0F172A);
+               white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</div>
+          ${ultima?`<div style="font-size:9px;color:var(--muted,#64748B)">${ultima.hora}</div>`:''}
+        </div>
+        <div style="font-size:11px;color:var(--muted,#64748B);white-space:nowrap;
+             overflow:hidden;text-overflow:ellipsis;margin-top:1px">
+          ${ultima ? (ultima.de==='gm'||ultima.de===meId?'Você: ':'')+ultima.texto.substring(0,40)+(ultima.texto.length>40?'...':'') : 'Sem mensagens'}
+        </div>
+      </div>
+      ${naoLidas?`<div style="background:#EF4444;color:#fff;border-radius:50%;min-width:18px;height:18px;
+        font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;
+        padding:0 4px">${naoLidas}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function abrirConversa(contatoId){
+  chatContatoAtivo = chatContatos.find(c=>c.id===contatoId);
+  if(!chatContatoAtivo) return;
+
+  // Atualiza header
+  const av = document.getElementById('conv-avatar');
+  const nm = document.getElementById('conv-nome');
+  const sb = document.getElementById('conv-status');
+  const statusBar = document.getElementById('chat-status-bar');
+
+  if(av) av.textContent = chatContatoAtivo.ini;
+  if(nm) nm.textContent = chatContatoAtivo.nome;
+  if(sb){
+    const corStatus = chatContatoAtivo.status==='online'?'#059669':chatContatoAtivo.status==='ausente'?'#D97706':'#94A3B8';
+    const txtStatus = chatContatoAtivo.status==='online'?'Online':chatContatoAtivo.status==='ausente'?'Ausente':'Offline';
+    sb.innerHTML = `<span style="color:${corStatus}">&#9679;</span> ${txtStatus}`;
+  }
+  if(statusBar) statusBar.textContent = 'Conversa com ' + chatContatoAtivo.nome;
+
+  // Mostra conversa, oculta lista
+  document.getElementById('chat-contatos').style.display = 'none';
+  const conv = document.getElementById('chat-conversa');
+  conv.style.display = 'flex';
+  conv.style.flexDirection = 'column';
+
+  // Renderiza mensagens
+  renderMsgsConversa(contatoId);
+  setTimeout(()=>{ const inp=document.getElementById('chat-input-msg'); if(inp) inp.focus(); }, 200);
+}
+
+function renderMsgsConversa(contatoId){
+  const area = document.getElementById('chat-msgs-conversa');
+  if(!area) return;
+  const msgs = chatMensagens[contatoId] || [];
+  const perfil = currentPerfil?.role?.toLowerCase().includes('admin') ? 'admin' : 'vendedor';
+  const meId = perfil === 'admin' ? 'gm' : (currentPerfil?.nome?.split(' ')[0]?.toLowerCase() || 'gm');
+
+  // Marca como lidas
+  msgs.forEach(m => { if(m.de !== meId) m.lida = true; });
+
+  if(msgs.length === 0){
+    area.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted,#64748B);font-size:12px">
+      Nenhuma mensagem ainda.<br>Diga ol&#225;! &#128075;
+    </div>`;
+    return;
+  }
+
+  area.innerHTML = msgs.map(m => {
+    const isMe = m.de === meId || m.de === 'gm';
+    const temMencao = m.texto.includes('@');
+    const txtFormatado = m.texto.replace(/@([^\s,]+(?:\s[^\s,]+)?)/g,
+      '<span style="background:rgba(0,63,127,0.12);color:#003F7F;border-radius:3px;padding:1px 5px;font-weight:600">@$1</span>');
+
+    return `<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'}">
+      ${m.arquivo?`<div style="max-width:75%;margin-bottom:4px">
+        <div style="background:${isMe?'linear-gradient(135deg,#003F7F,#0056B3)':'#FFFFFF'};
+             color:${isMe?'#fff':'#0F172A'};border-radius:10px;padding:8px 11px;
+             border:1px solid ${isMe?'transparent':'#E2E8F0'};font-size:11px">
+          &#128206; ${m.arquivo}
+        </div>
+      </div>`:''}
+      <div style="max-width:75%;padding:8px 11px;border-radius:12px;font-size:12px;line-height:1.5;
+        ${isMe
+          ?'background:linear-gradient(135deg,#003F7F,#0056B3);color:#fff;border-bottom-right-radius:3px'
+          :'background:#FFFFFF;color:#0F172A;border:1px solid #E2E8F0;border-bottom-left-radius:3px'}
+        ${temMencao?'border-left:3px solid #D97706':''}">${txtFormatado}</div>
+      <div style="font-size:9px;color:var(--muted,#94A3B8);margin-top:2px;padding:0 3px">
+        ${isMe?'Você':chatContatoAtivo?.nome} &#183; ${m.hora}
+      </div>
+    </div>`;
+  }).join('');
+
+  area.scrollTop = area.scrollHeight;
+}
+
+function voltarContatos(){
+  chatContatoAtivo = null;
+  const conv = document.getElementById('chat-conversa');
+  const lista = document.getElementById('chat-contatos');
+  if(conv) conv.style.display = 'none';
+  if(lista) lista.style.display = 'block';
+  renderChatContatos();
+  const statusBar = document.getElementById('chat-status-bar');
+  if(statusBar) statusBar.textContent = 'Chat interno da equipe';
+}
+
+function enviarMsgEquipe(){
+  if(!chatContatoAtivo) return;
+  const inp = document.getElementById('chat-input-msg');
+  const txt = inp?.value?.trim();
+  if(!txt && !chatArquivoSelecionado) return;
+
+  const hora = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const perfil = currentPerfil?.role?.toLowerCase().includes('admin') ? 'admin' : 'vendedor';
+  const meId = perfil === 'admin' ? 'gm' : (currentPerfil?.nome?.split(' ')[0]?.toLowerCase() || 'gm');
+
+  const novaMsg = {
+    de: meId,
+    texto: txt || '',
+    hora,
+    lida: false,
+    arquivo: chatArquivoSelecionado ? chatArquivoSelecionado.name : null
+  };
+
+  if(!chatMensagens[chatContatoAtivo.id]) chatMensagens[chatContatoAtivo.id] = [];
+  chatMensagens[chatContatoAtivo.id].push(novaMsg);
+
+  if(inp){ inp.value=''; inp.style.height='34px'; }
+  removerArquivo();
+  renderMsgsConversa(chatContatoAtivo.id);
+
+  // Simula resposta após 1.5s (em produção: polling do Apps Script)
+  if(Math.random() > 0.5){
+    setTimeout(()=>{
+      const respostas = [
+        'Ok, entendido!',
+        'Certo, vou verificar.',
+        'Pode deixar, cuido disso.',
+        'Perfeito, obrigada!',
+        'Vou dar retorno ainda hoje.',
+      ];
+      chatMensagens[chatContatoAtivo?.id]?.push({
+        de: chatContatoAtivo.id,
+        texto: respostas[Math.floor(Math.random()*respostas.length)],
+        hora: new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
+        lida: false
+      });
+      if(chatContatoAtivo) renderMsgsConversa(chatContatoAtivo.id);
+    }, 1500);
+  }
+}
+
+function chatEquipKeydown(e){
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); enviarMsgEquipe(); }
+}
+
+function chatEquipInput(el){
+  const txt = el.value;
+  const atIdx = txt.lastIndexOf('@');
+  if(atIdx >= 0 && atIdx === txt.length-1 || (atIdx >= 0 && !txt.slice(atIdx+1).includes(' '))){
+    const busca = txt.slice(atIdx+1).toLowerCase();
+    const sugs = leads.filter(l=>l.nome.toLowerCase().includes(busca)).slice(0,5);
+    const list = document.getElementById('chat-mencao-list');
+    if(list && sugs.length){
+      list.style.display='block';
+      list.innerHTML=sugs.map(l=>`<div onclick="inserirMencao('${l.nome}')"
+        style="padding:8px 12px;cursor:pointer;font-size:12px;color:var(--white,#0F172A);
+               border-bottom:1px solid var(--line,rgba(0,63,127,0.08))"
+        onmouseover="this.style.background='rgba(0,63,127,0.06)'"
+        onmouseout="this.style.background='transparent'">
+        @${l.nome} <span style="font-size:10px;color:var(--muted,#64748B)">${l.prod}</span>
+      </div>`).join('');
+    } else if(list){ list.style.display='none'; }
+  } else {
+    const list = document.getElementById('chat-mencao-list');
+    if(list) list.style.display='none';
+  }
+}
+
+function inserirMencao(nomeL){
+  const inp = document.getElementById('chat-input-msg');
+  if(!inp) return;
+  const txt = inp.value;
+  const atIdx = txt.lastIndexOf('@');
+  inp.value = txt.slice(0, atIdx) + '@' + nomeL + ' ';
+  const list = document.getElementById('chat-mencao-list');
+  if(list) list.style.display='none';
+  inp.focus();
+}
+
+function selecionarArquivo(input){
+  if(!input.files?.length) return;
+  chatArquivoSelecionado = input.files[0];
+  const prev = document.getElementById('chat-file-preview');
+  const nome = document.getElementById('chat-file-nome');
+  if(prev) prev.style.display='flex';
+  if(nome) nome.textContent = '&#128206; ' + chatArquivoSelecionado.name;
+}
+
+function removerArquivo(){
+  chatArquivoSelecionado = null;
+  const prev = document.getElementById('chat-file-preview');
+  const inp  = document.getElementById('chat-file-input');
+  if(prev) prev.style.display='none';
+  if(inp)  inp.value='';
+}
+
+function zerarNaoLidas(){
+  // Zera contador do sino
+  atualizarBadgeTotal();
+}
+
+function atualizarBadgeTotal(){
+  const total = Object.values(chatMensagens)
+    .flat()
+    .filter(m => m.de !== 'gm' && !m.lida).length;
+  const badge = document.getElementById('chat-total-badge');
+  const badgeEquipe = document.getElementById('chat-equipe-badge');
+  if(badge){
+    badge.style.display = total > 0 ? 'block' : 'none';
+    badge.textContent = total;
+  }
+  if(badgeEquipe){
+    badgeEquipe.style.display = total > 0 ? 'block' : 'none';
+    badgeEquipe.textContent = total;
+  }
+}
+
+// Inicializa badge ao carregar
+window.addEventListener('load', ()=>setTimeout(atualizarBadgeTotal, 1000));
+
+
 // -- CHATBOT -------------------------------------------------------
 let chatOpen=false;
 let chatLog=[];
@@ -2490,16 +2812,8 @@ let botProcessando=false;
 const MAX_HIST_BOT = 8;
 
 function toggleChat(){
-  chatOpen=!chatOpen;
-  const win=document.getElementById('cwin');
-  win.classList.toggle('open',chatOpen);
-  document.getElementById('cun').style.display='none';
-  if(chatOpen && chatLog.length===0) {
-    _botBoasVindas();
-  }
-  if(chatOpen) {
-    setTimeout(()=>document.getElementById('ci').focus(),300);
-  }
+  // Redireciona para o chat unificado
+  toggleChatGeral();
 }
 
 function _botBoasVindas(){
@@ -5933,385 +6247,4 @@ Seja prático e operacional. O vendedor quer ajuda para fechar o próximo negóc
                        animation:cop-bounce .8s infinite"></span>
           <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299);
                        animation:cop-bounce .8s .15s infinite"></span>
-          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299);
-                       animation:cop-bounce .8s .3s infinite"></span>
-        </div>
-      </div>
-    `;
-
-    // Injeta animação se ainda não existe
-    if (!document.getElementById('cop-anim-style')) {
-      const style = document.createElement('style');
-      style.id = 'cop-anim-style';
-      style.textContent = `@keyframes cop-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}`;
-      document.head.appendChild(style);
-    }
-
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-  }
-
-  function _removerTyping() {
-    document.getElementById('copilot-typing')?.remove();
-  }
-
-  function _atualizarContexto(label) {
-    const ctx = document.getElementById('copilot-ctx');
-    if (ctx) ctx.textContent = `📍 ${label}`;
-  }
-
-  function _getContextoLabel() {
-    return _perfil === 'admin'
-      ? 'Visão completa - todos os vendedores e leads'
-      : `Sua carteira - ${_vendedorNome}`;
-  }
-
-  // -- BOTÃO FLUTUANTE -------------------------------------------------------
-  function _renderBotaoFlutuante() {
-    return; // Desabilitado: usar chatbot original
-    document.getElementById('copilot-fab')?.remove();
-
-    const fab = document.createElement('button');
-    fab.id = 'copilot-fab';
-    fab.title = 'Abrir Copilot IA';
-    fab.style.cssText = `
-      position:fixed;bottom:24px;left:24px;z-index:695;
-      width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
-      background:linear-gradient(135deg,#1E6FFF,#0A3BAA);color:#fff;
-      font-size:22px;display:flex;align-items:center;justify-content:center;
-      box-shadow:0 0 24px rgba(30,111,255,.55);transition:transform .18s,box-shadow .18s;
-      font-family:'Inter',sans-serif;
-    `;
-    fab.textContent = '🤖';
-    fab.addEventListener('click', toggle);
-    fab.addEventListener('mouseover', () => {
-      fab.style.transform = 'scale(1.08)';
-      fab.style.boxShadow = '0 0 36px rgba(30,111,255,.75)';
-    });
-    fab.addEventListener('mouseout', () => {
-      fab.style.transform = 'scale(1)';
-      fab.style.boxShadow = '0 0 24px rgba(30,111,255,.55)';
-    });
-
-    document.body.appendChild(fab);
-  }
-
-  // -- API PÚBLICA -----------------------------------------------------------
-  function init(perfil = 'admin', vendedorNome = null) {
-    _perfil       = perfil;
-    _vendedorNome = vendedorNome;
-    _historico    = [];
-
-    _renderBotaoFlutuante();
-    _renderSidebar();
-
-    console.log('[Copilot] Inicializado - perfil:', perfil, vendedorNome || '');
-  }
-
-  function abrir() {
-    const sidebar = document.getElementById('copilot-sidebar');
-    if (!sidebar) return;
-    sidebar.style.transform = 'translateX(0)';
-    _aberto = true;
-    _atualizarContexto(_getContextoLabel());
-  }
-
-  function fechar() {
-    const sidebar = document.getElementById('copilot-sidebar');
-    if (!sidebar) return;
-    sidebar.style.transform = 'translateX(100%)';
-    _aberto = false;
-  }
-
-  function toggle() {
-    _aberto ? fechar() : abrir();
-  }
-
-  function limparHistorico() {
-    _historico = [];
-    const msgs = document.getElementById('copilot-msgs');
-    if (msgs) msgs.innerHTML = '';
-    _adicionarMensagem('bot', 'Histórico limpo. Como posso ajudar?');
-  }
-
-  return {
-    init, abrir, fechar, toggle, enviar, perguntar, limparHistorico
-  };
-
-})();
-
-window.SmartCopilot = SmartCopilot;
-
-</script>
-
-<script>
-/**
- * Smart Automation CRM - Script de Integração
- *
- * COMO USAR: Adicione ao final do <body> do CRM, APÓS os outros scripts.
- *
- * Ordem de carregamento no HTML:
- * 1. <link rel="manifest" id="pwa-manifest-link">
-<meta name="theme-color" content="#1E6FFF">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Smart CRM">
-<link rel="apple-touch-icon" id="apple-touch-icon-link">
- * 2. <script src="offline-db.js"><\/script>
- * 3. <script src="notifications.js"><\/script>
- * 4. <script src="copilot.js"><\/script>
- * 5. <script src="crm-integration.js"><\/script>  ← este arquivo
- *
- * Para intranet: adicione os 4 scripts acima no HTML existente.
- * Para PWA instalável: adicione também o registro do SW abaixo.
- */
-
-// -- CONFIGURAÇÃO GLOBAL DO CRM ---------------------------------------------
-// Edite estes valores antes de publicar
-window.__CRM_CONFIG__ = {
-  appsScriptUrl:  'https://script.google.com/macros/s/AKfycbxYR2aM_SIpClE_ugEtbTxhBcXKTCLITzkGj-awu5vl2By16-720SpeNbze0HFIuYPD/exec',   // URL do Web App do Google Apps Script
-  protheusUrl:    'https://protheus.suaempresa.com.br', // URL da API REST do Protheus
-  protheusToken:  '',                              // Bearer token do Protheus (obtenha via login)
-  versao:         '1.0.0',
-  ambiente:       'demo',                          // 'demo' | 'producao'
-};
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// 1. REGISTRO DO SERVICE WORKER (PWA)
-// ═══════════════════════════════════════════════════════════════════════════════
-async function registrarServiceWorker() {
-  // SW externo desabilitado — SW inline via Blob já registrado no <head>
-  // SW via Blob já registrado no head
-}
-
-function _mostrarBannerAtualizacao(newWorker) {
-  const banner = document.createElement('div');
-  banner.style.cssText = `
-    position:fixed;bottom:0;left:0;right:0;z-index:9999;
-    background:linear-gradient(135deg,#1E6FFF,#0A3BAA);color:#fff;
-    padding:12px 20px;display:flex;align-items:center;justify-content:space-between;
-    font-family:'Inter',sans-serif;font-size:13px;
-    box-shadow:0 -4px 20px rgba(0,0,0,.4);
-  `;
-  banner.innerHTML = `
-    <span>🔄 Nova versão do CRM disponível!</span>
-    <button onclick="window.location.reload()"
-      style="background:#fff;color:#1E6FFF;border:none;border-radius:6px;
-             padding:6px 16px;cursor:pointer;font-weight:600;font-family:'Inter',sans-serif">
-      Atualizar agora
-    </button>
-  `;
-  document.body.appendChild(banner);
-  newWorker.postMessage({ type: 'SKIP_WAITING' });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// 2. PROMPT DE INSTALAÇÃO (intranet / app)
-// ═══════════════════════════════════════════════════════════════════════════════
-let _installPromptEvent = null;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  _installPromptEvent = e;
-  console.log('[PWA] Prompt de instalação capturado.');
-  _mostrarBotaoInstalar();
-});
-
-function _mostrarBotaoInstalar() {
-  // Adiciona botão de instalar no topbar se ainda não existir
-  if (document.getElementById('pwa-install-btn')) return;
-
-  const btn = document.createElement('button');
-  btn.id = 'pwa-install-btn';
-  btn.title = 'Instalar CRM como aplicativo';
-  btn.style.cssText = `
-    padding:6px 13px;border-radius:7px;border:1px solid rgba(30,111,255,.35);
-    background:rgba(30,111,255,.12);color:var(--blue3,#4A9AFF);cursor:pointer;
-    font-size:12px;font-weight:600;font-family:'Inter',sans-serif;
-    transition:all .15s;display:flex;align-items:center;gap:6px;
-  `;
-  btn.innerHTML = '📲 Instalar CRM';
-  btn.addEventListener('click', instalarApp);
-  btn.addEventListener('mouseover', () => btn.style.background = 'rgba(30,111,255,.25)');
-  btn.addEventListener('mouseout',  () => btn.style.background = 'rgba(30,111,255,.12)');
-
-  const topbarRight = document.querySelector('.tr');
-  if (topbarRight) {
-    topbarRight.insertBefore(btn, topbarRight.firstChild);
-  }
-}
-
-async function instalarApp() {
-  if (!_installPromptEvent) {
-    // Fallback: instrução manual
-    alert('Para instalar o CRM:\n\n📱 Android/Chrome: Menu ⋮ → "Adicionar à tela inicial"\n💻 Desktop/Chrome: Ícone ⊕ na barra de endereços → Instalar\n🍎 iOS/Safari: Compartilhar → "Adicionar à Tela de Início"');
-    return;
-  }
-
-  _installPromptEvent.prompt();
-  const result = await _installPromptEvent.userChoice;
-
-  if (result.outcome === 'accepted') {
-    console.log('[PWA] App instalado com sucesso!');
-    document.getElementById('pwa-install-btn')?.remove();
-  }
-
-  _installPromptEvent = null;
-}
-
-// Detecta se já está instalado como PWA
-window.addEventListener('appinstalled', () => {
-  console.log('[PWA] CRM instalado como aplicativo.');
-  document.getElementById('pwa-install-btn')?.remove();
-});
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// 3. BANNER OFFLINE / ONLINE
-// ═══════════════════════════════════════════════════════════════════════════════
-function _renderBannerOffline() {
-  const existing = document.getElementById('offline-banner');
-  if (existing) existing.remove();
-
-  if (navigator.onLine) return;
-
-  const banner = document.createElement('div');
-  banner.id = 'offline-banner';
-  banner.style.cssText = `
-    position:fixed;top:0;left:0;right:0;z-index:9998;
-    background:#F59E0B;color:#1C1917;padding:8px 20px;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
-  `;
-  banner.innerHTML = `
-    📶 Modo offline - dados carregados localmente. Pedidos serão sincronizados ao reconectar.
-    <span id="offline-pending" style="background:rgba(0,0,0,.15);padding:2px 8px;border-radius:10px">
-      Verificando...
-    </span>
-  `;
-  document.body.insertBefore(banner, document.body.firstChild);
-
-  // Conta pendentes
-  SmartOfflineDB.totalPendentes().then(n => {
-    const span = document.getElementById('offline-pending');
-    if (span) span.textContent = n > 0 ? `${n} item(s) na fila` : 'Nenhum pendente';
-  });
-}
-
-window.addEventListener('online',  () => {
-  document.getElementById('offline-banner')?.remove();
-  // Toast de reconexão
-  window.dispatchEvent(new CustomEvent('crm:toast', {
-    detail: { msg: '📶 Conexão restaurada! Sincronizando dados...', tipo: 'ok' }
-  }));
-});
-
-window.addEventListener('offline', () => {
-  _renderBannerOffline();
-  window.dispatchEvent(new CustomEvent('crm:toast', {
-    detail: { msg: '📶 Sem internet - CRM em modo offline', tipo: 'info' }
-  }));
-});
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// 4. LISTENER DO TOAST GLOBAL (eventos internos do sistema)
-// ═══════════════════════════════════════════════════════════════════════════════
-window.addEventListener('crm:toast', (e) => {
-  const { msg, tipo } = e.detail || {};
-  if (typeof window.toast === 'function') {
-    window.toast(msg, tipo === 'ok' ? 'ok' : tipo === 'info' ? 'info' : 'err');
-  }
-});
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// 5. INICIALIZAÇÃO PRINCIPAL
-// ═══════════════════════════════════════════════════════════════════════════════
-async function inicializarCRM() {
-  console.log('[CRM] Inicializando Smart Automation CRM v' + window.__CRM_CONFIG__.versao);
-
-  // Detecta perfil atual (definido pelo login)
-  const perfil      = window.currentPerfil?.role?.toLowerCase().includes('admin') ? 'admin' : 'vendedor';
-  const vendedorNome = perfil === 'vendedor' ? window.currentPerfil?.nome : null;
-
-  // 1. Registra Service Worker
-  await registrarServiceWorker();
-
-  // 2. Inicializa banco offline
-  await SmartOfflineDB.init();
-
-  // 3. Carrega dados do servidor (com fallback para IndexedDB)
-  const carregouServidor = await SmartOfflineDB.Sincronizador.carregarDadosServidor(perfil, vendedorNome);
-  if (!carregouServidor) {
-    console.log('[CRM] Usando dados do IndexedDB (offline ou servidor indisponível)');
-  }
-
-  // 4. Inicializa Central de Notificações
-  if (window.SmartNotificacoes) {
-    await SmartNotificacoes.init(perfil, vendedorNome);
-  }
-
-  // 5. Inicializa Copilot
-  if (window.SmartCopilot) {
-    SmartCopilot.init(perfil, vendedorNome);
-  }
-
-  // 6. Banner offline se necessário
-  _renderBannerOffline();
-
-  // 7. Listener para abrir lead via notificação
-  window.addEventListener('crm:abrir-lead', (e) => {
-    const { leadId } = e.detail || {};
-    if (leadId && typeof verDet === 'function') {
-      verDet(typeof leadId === 'number' ? leadId : parseInt(leadId));
-    }
-  });
-
-  // 8. Notificações de demo (apenas em ambiente demo)
-  if (window.__CRM_CONFIG__.ambiente === 'demo') {
-    setTimeout(() => _dispararNotifDemo(), 5000);
-  }
-
-  console.log('[CRM] Inicialização concluída. Perfil:', perfil, '| Online:', navigator.onLine);
-}
-
-function _dispararNotifDemo() {
-  if (!window.SmartNotificacoes) return;
-
-  // Simula notificações realistas para demonstração
-  SmartNotificacoes.criar('risco_carteira',
-    'Risco de carteira: Frigorífico Bela Vista',
-    'Cliente vinculado exclusivamente a Carlos Silva. 45 dias de relacionamento.',
-    { leadId: 1 }
-  );
-
-  setTimeout(() => {
-    SmartNotificacoes.criar('lead_respondeu',
-      'Pet Food Varejo RJ respondeu!',
-      '"Olá! Tenho interesse em analisar a proposta. Pode me ligar amanhã?"',
-      { leadId: 8 }
-    );
-  }, 3000);
-}
-
-// -- INICIA TUDO ---------------------------------------------------------------
-// Aguarda o DOM estar pronto
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', inicializarCRM);
-} else {
-  inicializarCRM();
-}
-
-// Expõe função de instalação globalmente
-window.instalarCRMComoApp = instalarApp;
-
-</script>
-
-
-<!-- BOTÃO DE AJUDA -->
-
-
-<!-- JANELA DE AJUDA -->
-
-
-</body>
-</html>
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--muted,#6B7299)
