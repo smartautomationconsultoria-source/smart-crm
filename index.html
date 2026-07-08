@@ -1215,9 +1215,18 @@ function fazerLogin(){
     return;
   }
   currentPerfil = PERFIS[perfil];
+  currentPerfil.key = perfil;
   aplicarPerfil(perfil);
   document.getElementById('login-screen').style.display='none';
   toast('Bem-vindo(a), '+currentPerfil.nome+'!','ok');
+  // Vendedor vai direto para Leads (sem Dashboard)
+  if(PERFIS[perfil]?.leads_filter){
+    setTimeout(()=>{
+      const niLeads = Array.from(document.querySelectorAll('.ni'))
+        .find(n=>n.textContent.trim().includes('Lead'));
+      if(niLeads) niLeads.click();
+    }, 100);
+  }
   if(typeof _atualizarCtxBar==='function') _atualizarCtxBar();
 }
 
@@ -1237,20 +1246,61 @@ function aplicarPerfil(perfilKey){
     lb.onclick=()=>{document.getElementById('login-screen').style.display='flex';};
     foot.appendChild(lb);
   }
-  // Aplica filtro de leads
+  // Aplica filtro completo por perfil
   if(p.leads_filter){
-    const filtrados = leads.filter(l=>l.vend===p.leads_filter);
+    const filtro = p.leads_filter;
+
+    // 1. Filtra leads
+    const filtrados = leads.filter(l=>l.vend===filtro);
     renderLeads(filtrados);
     document.getElementById('ms-tot').textContent = filtrados.length;
-    // Esconde proteção de carteira
+    document.getElementById('nb-leads').textContent = filtrados.length;
+
+    // 2. Filtra propostas
+    window._propostasOriginal = window._propostasOriginal || propostas.slice();
+    window.propostas = propostas.filter(p2=>p2.vend===filtro || p2.vend?.includes(filtro.split(' ')[0]));
+    if(typeof renderPropostas==='function') renderPropostas();
+
+    // 3. Filtra contratos
+    window._contratosOriginal = window._contratosOriginal || contratos.slice();
+    window.contratos = contratos.filter(c=>c.vend===filtro || c.vend?.includes(filtro.split(' ')[0]));
+    if(typeof renderContratos==='function') renderContratos();
+
+    // 4. Filtra perdas
+    if(window.perdaData){
+      window._perdaOriginal = window._perdaOriginal || perdaData.slice();
+      window.perdaData = perdaData.filter(p2=>p2.vend===filtro);
+    }
+
+    // 5. Metas — mostra só a própria
+    if(window.metas_data){
+      window._metasOriginal = window._metasOriginal || metas_data.slice();
+      window.metas_data = metas_data.filter(m=>m.nome===filtro);
+      if(typeof renderMetas==='function') renderMetas();
+    }
+
+    // 6. Oculta seções que vendedor não vê na sidebar
     document.querySelectorAll('.ni').forEach(ni=>{
-      if(ni.textContent.includes('Prote')){ni.style.display='none';}
+      const txt = ni.textContent.trim();
+      if(txt.includes('Vendedor') ||
+         txt.includes('Prote') ||
+         txt.includes('Forecast')){
+        ni.style.display='none';
+      }
     });
-    // Dashboard simplificado
+
+    // 7. Dashboard label
     document.getElementById('ps').textContent = p.dash_label;
-    // Mostra banner de perfil
-    mostrarBannerPerfil(p.nome, p.role, p.leads_filter);
+
+    // 8. Banner de perfil
+    mostrarBannerPerfil(p.nome, p.role, filtro);
+
   } else {
+    // Admin — restaura todos os dados originais se existirem
+    if(window._propostasOriginal) window.propostas = window._propostasOriginal;
+    if(window._contratosOriginal) window.contratos = window._contratosOriginal;
+    if(window._perdaOriginal) window.perdaData = window._perdaOriginal;
+    if(window._metasOriginal) window.metas_data = window._metasOriginal;
     renderLeads(leads);
     document.getElementById('ps').textContent = p.dash_label;
   }
@@ -1437,6 +1487,14 @@ const titles={
 };
 function qni(n){return [...document.querySelectorAll('.ni')].find(el=>el.textContent.trim().startsWith({leads:'Leads',funil:'Funil',vendedores:'Vend',perdas:'Análise',carteira:'Prote',relatorios:'Relat',automacoes:'Auto'}[n]||'x'));}
 function go(id,el){
+  // Bloqueia seções proibidas para vendedor
+  if(_isVendedor && _isVendedor()){
+    const bloqueadas = ['vendedores','carteira','forecast','dash','relatorios'];
+    if(bloqueadas.includes(id)){
+      toast('Seção restrita ao perfil Admin','err');
+      return;
+    }
+  }
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.getElementById('p-'+id).classList.add('active');
@@ -1590,6 +1648,26 @@ function toast(m,t='ok'){
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+
+// ── FILTRO GLOBAL POR PERFIL ──────────────────────────────────────────────
+// Garante que vendedor SEMPRE vê só os próprios dados, em qualquer seção
+
+function _filtrarPorPerfil(array, campoVendedor){
+  if(!currentPerfil) return array;
+  const filtro = currentPerfil.leads_filter || PERFIS[currentPerfil.key]?.leads_filter;
+  if(!filtro) return array; // admin vê tudo
+  return array.filter(item => {
+    const vend = item[campoVendedor] || '';
+    return vend === filtro || vend.includes(filtro.split(' ')[0]);
+  });
+}
+
+function _isVendedor(){
+  if(!currentPerfil) return false;
+  const filtro = currentPerfil.leads_filter || PERFIS[currentPerfil.key]?.leads_filter;
+  return !!filtro;
+}
 
 // -- LEADS ----------------------------------------------
 function renderLeads(lista){
@@ -1782,21 +1860,40 @@ function renderVend(){
 
 // -- PERDAS ----------------------------------------------
 function renderPerdas(){
-  document.getElementById('perdas-list').innerHTML=motivosPerdas.map(m=>`
+  // Filtra por perfil — vendedor vê só as próprias perdas
+  const _perdas = _isVendedor() ? _filtrarPorPerfil(perdaData,'vend') : perdaData;
+
+  // Recalcula motivos com dados filtrados
+  const motivosFiltrados = [
+    {ico:'💰',nome:'Preço acima do esperado',  motivo:'Preço acima do esperado'},
+    {ico:'🏆',nome:'Escolheu concorrente',      motivo:'Escolheu concorrente'},
+    {ico:'📵',nome:'Cliente sem retorno',        motivo:'Cliente sem retorno'},
+    {ico:'💸',nome:'Budget cortado / sem verba', motivo:'Budget cortado'},
+    {ico:'⏳',nome:'Decisão adiada',             motivo:'Decisão adiada'},
+  ].map(m=>{
+    const n = _perdas.filter(p=>p.motivo===m.motivo).length;
+    const pct = _perdas.length ? Math.round(n/_perdas.length*100) : 0;
+    return {...m, n, pct};
+  });
+
+  document.getElementById('perdas-list').innerHTML=motivosFiltrados.map(m=>`
     <div style="display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:7px;padding:9px 12px;border:1px solid var(--line)">
       <span style="font-size:16px">${m.ico}</span>
-      <div style="flex:1"><div style="font-size:12px;font-weight:600">${m.nome}</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${m.n} negócios perdidos</div></div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:600">${m.nome}</div><div style="font-size:10px;color:var(--muted);margin-top:1px">${m.n} neg&#243;cios perdidos</div></div>
       <div style="font-size:15px;font-weight:800;color:var(--blue3)">${m.pct}%</div>
     </div>`).join('');
-  document.getElementById('perdas-tb').innerHTML=perdaData.map(p=>`<tr>
-    <td style="font-weight:700">${p.nome}</td>
-    <td style="font-size:11px">${p.vend}</td>
-    <td style="color:var(--red);font-weight:700">${p.val}</td>
-    <td><span class="badge b-prop">${p.etapa}</span></td>
-    <td><span class="badge b-perd">${p.motivo}</span></td>
-    <td style="font-size:10px;color:var(--muted)">${p.data}</td>
-    <td style="font-size:10px;color:var(--muted)">${p.obs||'-'}</td>
-  </tr>`).join('');
+
+  document.getElementById('perdas-tb').innerHTML = _perdas.length
+    ? _perdas.map(p=>`<tr>
+        <td style="font-weight:700">${p.nome}</td>
+        <td style="font-size:11px">${p.vend}</td>
+        <td style="color:var(--red);font-weight:700">${p.val}</td>
+        <td><span class="badge b-prop">${p.etapa}</span></td>
+        <td><span class="badge b-perd">${p.motivo}</span></td>
+        <td style="font-size:10px;color:var(--muted)">${p.data}</td>
+        <td style="font-size:10px;color:var(--muted)">${p.obs||'-'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px">Nenhuma perda registrada</td></tr>';
 }
 
 
@@ -3549,7 +3646,8 @@ const propStatus = {
   'Recusada':       {cls:'b-perd',txt:'Recusada'},
 };
 function renderPropostas(){
-  document.getElementById('prop-tb').innerHTML = propostas.map(p => {
+  const _props = _isVendedor() ? _filtrarPorPerfil(propostas, 'vend') : propostas;
+  document.getElementById('prop-tb').innerHTML = _props.map(p => {
     const st = propStatus[p.status] || {cls:'b-novo',txt:p.status};
     return `<tr>
       <td style="font-weight:700;color:var(--blue3)">${p.id}</td>
@@ -3876,8 +3974,8 @@ function gerarProposta(){
 
 // -- CONTRATOS -----------------------------------------
 function renderContratos(){
-  // Usa dados locais se array contratos global estiver vazio
-  const dadosCont = (typeof contratos !== 'undefined' && contratos.length) ? contratos : [];
+  const todosContratos = (typeof contratos !== 'undefined' && contratos.length) ? contratos : [];
+  const dadosCont = _isVendedor() ? _filtrarPorPerfil(todosContratos, 'vend') : todosContratos;
   document.getElementById('contratos-list').innerHTML = dadosCont.map(c=>{
     const vencDias = c.vencDias || c.dias || 365;
     const pct=Math.min(100,Math.round((365-vencDias)/365*100));
@@ -3943,7 +4041,8 @@ function renderProdutos(){
 
 // -- METAS ---------------------------------------------
 function renderMetas(){
-  const totalMeta = metas_data.reduce((a,m)=>a+m.meta,0);
+  const _dadosMetas = _isVendedor() ? _filtrarPorPerfil(metas_data, 'nome') : metas_data;
+  const totalMeta = _dadosMetas.reduce((a,m)=>a+m.meta,0);
   const totalReal = metas_data.reduce((a,m)=>a+m.realizado,0);
   const pctTime = Math.round(totalReal/totalMeta*100);
   document.getElementById('metas-list').innerHTML = `
@@ -3956,7 +4055,7 @@ function renderMetas(){
         <div class="meta-fill" style="width:${pctTime}%;background:${pctTime>=80?'var(--grd)':'linear-gradient(135deg,var(--amber),#f59e0b)'}"></div>
       </div>
     </div>
-    ${metas_data.map(m=>{
+    ${_dadosMetas.map(m=>{
       const pct=Math.round(m.realizado/m.meta*100);
       const cor=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
       return `<div class="meta-card">
