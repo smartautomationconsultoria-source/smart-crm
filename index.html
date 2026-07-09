@@ -1219,6 +1219,8 @@ function fazerLogin(){
   aplicarPerfil(perfil);
   document.getElementById('login-screen').style.display='none';
   toast('Bem-vindo(a), '+currentPerfil.nome+'!','ok');
+  // Notifica a Grasiele que alguém fez login
+  _notificarLogin(perfil, currentPerfil.nome);
   // Vendedor vai direto para Leads (sem Dashboard)
   if(PERFIS[perfil]?.leads_filter){
     setTimeout(()=>{
@@ -2036,6 +2038,30 @@ function enviarWppTransferencia(){
   const url  = 'https://wa.me/'+num+'?text='+encodeURIComponent(msg);
   window.open(url,'_blank');
   toast('WhatsApp aberto para '+c.nome,'ok');
+}
+
+
+// -- NOTIFICAÇÃO DE LOGIN ───────────────────────────────────────────────────
+function _notificarLogin(perfilKey, nomeUsuario){
+  const url = window.__CRM_CONFIG__?.appsScriptUrl;
+  if(!url || url.includes('SUA_URL')) return;
+
+  const agora = new Date().toLocaleString('pt-BR');
+  const ua = navigator.userAgent;
+  const dispositivo = /mobile|android|iphone|ipad/i.test(ua) ? 'Mobile' : 'Desktop';
+
+  // Envia via GET para o Apps Script
+  const params = new URLSearchParams({
+    acao:        'notificarLogin',
+    perfil:      perfilKey,
+    nome:        nomeUsuario,
+    horario:     agora,
+    dispositivo: dispositivo,
+    origem:      location.hostname
+  });
+
+  fetch(url + '?' + params.toString(), { method: 'GET' })
+    .catch(()=>{}); // silencia erros — não impede o login
 }
 
 // -- EDITAR METAS ─────────────────────────────────────────────────────────
